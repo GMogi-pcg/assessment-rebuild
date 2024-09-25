@@ -3,11 +3,11 @@ import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-10">
-    <main>
+  <main>
+    <div class="p-4">
       <router-view />
-    </main>
-  </div>
+    </div>
+  </main>
 </template>
 
 <style scoped>
@@ -17,9 +17,11 @@ import HelloWorld from './components/HelloWorld.vue'
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
