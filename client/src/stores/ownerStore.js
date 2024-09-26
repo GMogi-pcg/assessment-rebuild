@@ -3,6 +3,7 @@ import {
   fetchOwners,
   createOwner,
   deleteOwner,
+  updateOwner,
 } from "../services/ownerService";
 
 export const useOwnerStore = defineStore("ownerStore", {
@@ -36,6 +37,16 @@ export const useOwnerStore = defineStore("ownerStore", {
       }
     },
     // need to create Update owner
+    async saveOwner(id, updatedOwner) {
+      try {
+        const savedOwner = await updateOwner(id, updatedOwner);
+        this.owners = this.owners.map((owner) => owner._id === id ? savedOwner : owner);
+      } catch (error) {
+        this.error = "Failed to update owner.";
+        console.error(error)
+      }
+    },
+
     // Delete owner
     async removeOwner(id) {
       try {
@@ -46,7 +57,7 @@ export const useOwnerStore = defineStore("ownerStore", {
         console.error(error);
       }
     },
-    selectedOwner(owner) {
+    selectOwner(owner) {
       this.selectedOwner = owner;
     }
   },

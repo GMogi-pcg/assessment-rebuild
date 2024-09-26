@@ -1,9 +1,15 @@
 import { getMongoClient } from "./mongoClient";
 import { Owner } from "../models/Owner";
 import * as Realm from "realm-web";
+import app from "./mongoClient";
 
-
-const ownersCollection = getMongoClient().db("PCGDB").collection("owners");
+const getOwnersCollection = () => {
+  const mongoClient = getMongoClient();
+  if (!mongoClient) {
+    throw new Error("Must be logged in to access MongoDB");
+  }
+  return mongoClient.db("PCGDB").collection("owners");
+};
 
 // create a new owner
 export const createOwner = async (ownerData) => {
@@ -16,7 +22,10 @@ export const createOwner = async (ownerData) => {
 
   // save
   try {
-    await ownersCollection.insertOne(owner.toMongoDocument());
+    const ownersCollection = getOwnersCollection();
+    const result = await ownersCollection.insertOne(owner.toMongoDocument());
+
+    return { _id: result.instertedId, ...owner.toMongoDocument() };
   } catch (error) {
     console.error("Error creating owner", error);
     throw new Error("Failed to create owner");
@@ -30,14 +39,49 @@ export const fetchOwners = async () => {
       throw new Error("Must be logged in to access MongoDB");
     }
 
-    return await ownersCollection.find();
+    const ownersCollectino = getOwnersCollection();
+    const owners = await ownersCollectino.find();
+
+    return owners.filter((owner) => owner && owner._id);
   } catch (error) {
     console.error("Error fetching owners", error);
     throw error;
   }
 };
 
+// Update owner
+export const updateOwner = async (ownerId, ownerData) => {
+  const owner = new Owner(ownerData);
+
+  // validation
+  if (!owner.isValid()) {
+    throw new Error("Invalid owner data");
+  }
+
+  // save
+  try {
+    const ownersCollection = getOwnersCollection();
+    await ownersCollection.updateOne(
+      { _id: new Realm.BSON.ObjectId(ownerId) },
+      { $set: owner.toMongoDocument() }
+    );
+    return { _id: ownerId, ...owner.toMongoDocument() };
+  } catch (error) {
+    console.error("Error updating owner", error);
+    throw new Error("Failed to update owner");
+  }
+};
+
 // Delete owner
 export const deleteOwner = async (ownerId) => {
-  return await ownersCollection.deleteOne({ _id: new Realm.BSON.ObjectId(ownerId) });
+  try {
+    const ownersCollection = getOwnersCollection();
+    return await ownersCollection.deleteOne({
+      _id: new Realm.BSON.ObjectId(ownerId),
+    });
+  } catch (error) {
+    console.error("Error deleting owner", error);
+    throw new Error("Failed to delete owner");
+  }
+
 };
