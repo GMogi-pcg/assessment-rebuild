@@ -27,7 +27,14 @@ export const registerUser = async (email, password) => {
 
 export const logoutUser = async () => {
   if (app.currentUser) {
-    await app.currentUser.logOut();
-    console.log("Successfully logged out!");
+    try {
+      await app.currentUser.logOut();
+      console.log("Successfully logged out!");
+    } catch (error) {
+      console.error("Failed to log out", error);
+      throw new Error("Failed to log out. Please try again.");
+    }
+  } else {
+    console.log("No user logged in.");
   }
 };

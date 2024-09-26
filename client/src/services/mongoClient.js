@@ -7,7 +7,7 @@ export const getMongoClient = () => {
   if (!app.currentUser) {
     throw new Error("Must be logged in to access MongoDB");
   }
-  return app.currentUser.mongoClient("mongodb-atlas");
+  return app.currentUser.mongoClient("Cluster0");
 };
 
 export default app;

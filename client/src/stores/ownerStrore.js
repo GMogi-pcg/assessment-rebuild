@@ -3,7 +3,6 @@ import {
   fetchOwners,
   createOwner,
   deleteOwner,
-  createOwner,
 } from "../services/ownerService";
 
 export const useOwnerStore = defineStore("ownerStore", {
@@ -29,8 +28,8 @@ export const useOwnerStore = defineStore("ownerStore", {
     // create a new owner
     async addOwner(newOwner) {
       try {
-        const createOwner = await createOwner(newOwner);
-        this.owners.push(createOwner);
+        const createdOwner = await createOwner(newOwner);
+        this.owners.push(createdOwner);
       } catch (error) {
         this.error = "Failed to load owners.";
         console.error(error);
