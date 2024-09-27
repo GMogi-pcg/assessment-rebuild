@@ -39,7 +39,7 @@ const owner = reactive({
 });
 
 function handleSave() {
-  emit('save', owner);
+  emit('save', {...owner});
 }
 
 </script>
