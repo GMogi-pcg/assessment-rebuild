@@ -2,7 +2,7 @@
   <div class="p-4">
     <NewOwner @save="handleCreateOwner" />
     <div class="text-center my-4">
-      <h2>Owners</h2>
+      <h2 class="text-xl font-bold mb-4">Owners</h2>
     </div>
 
     <!-- Loading State -->
@@ -14,7 +14,7 @@
     <div v-if="error" class="text-center my-4 text-red-500">{{ error }}</div>
 
     <!--Debugging: Show owners data for validation-->
-      <!--<pre v-if="!isLoading && ownerStore.owners.length === 0">No owners found. Check the data: {{ ownerStore.owners }}</pre>-->
+    <!--<pre v-if="!isLoading && ownerStore.owners.length === 0">No owners found. Check the data: {{ ownerStore.owners }}</pre>-->
 
     <!-- Owners Table -->
     <table class="min-w-full bg-white" v-if="!isLoading && ownerStore.owners.length > 0">
@@ -24,20 +24,34 @@
           <th class="py-2 px-4 border-b">Entity Type</th>
           <th class="py-2 px-4 border-b">Owner Type</th>
           <th class="py-2 px-4 border-b">Address</th>
+          <th class="py-2 px-4 border-b">Total Land Holdings</th>
           <th class="py-2 px-4 border-b">Files</th>
           <th class="py-2 px-4 border-b">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="owner in ownerStore.owners" :key="owner._id" >
+        <tr v-for="owner in ownerStore.owners" :key="owner._id">
           <!-- Editing Mode -->
           <template v-if="editingId === owner._id">
             <td class="py-2 px-4 border-b">
               <input type="text" v-model="editingData.name" class="shadow-md w-full" />
             </td>
+
+            <!--Entity Dropdown-->
             <td class="py-2 px-4 border-b">
-              <input type="text" v-model="editingData.entityType" class="shadow-md w-full" />
+              <select v-model="editingData.entityType" class="shadow-md w-full">
+                <option disabled value="">Select Entity Type</option>
+                <option v-for="type in entityTypes" :key="type" :value="type">{{ type }}</option>
+              </select>
             </td>
+            <!-- OwnerType Dropdown-->
+            <td class="py-2 px-4 border-b">
+              <select v-model="editingData.ownerType" class="shadow-md w-full">
+                <option disabled value="">Select Owner Type</option>
+                <option v-for="type in ownerTypes" :key="type" :value="type">{{ type }}</option>
+              </select>
+            </td>
+
             <td class="py-2 px-4 border-b">
               <input type="text" v-model="editingData.ownerType" class="shadow-md w-full" />
             </td>
@@ -57,12 +71,14 @@
                 class="bg-gray-700 hover:bg-gray-600 text-white px-4 rounded">Save</button>
             </td>
           </template>
+
           <!-- Display Mode -->
           <template v-else>
             <td class="py-2 px-4 border-b text-center">{{ owner.name }}</td>
             <td class="py-2 px-4 border-b text-center">{{ owner.entityType }}</td>
             <td class="py-2 px-4 border-b text-center">{{ owner.ownerType }}</td>
             <td class="py-2 px-4 border-b text-center">{{ owner.address }}</td>
+            <td class="py-2 px-4 border-b text-center">{{ owner.totalLandHoldings }}</td>
             <td class="py-2 px-4 border-b text-center">
               <div>
                 <a v-for="(file, index) in owner.files" :key="index" :href="`/uploads/${file}`" target="_blank">{{ file
@@ -84,71 +100,75 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue';
 import NewOwner from '../components/NewOwner.vue';
 import { useOwnerStore } from '../stores/ownerStore';
 
-export default {
-  components: { NewOwner, },
-  setup() {
-    const ownerStore = useOwnerStore();
-    const editingId = ref(null);
-    const editingData = ref({});
-    const file = ref(null);
-    const isLoading = ref(true);
-    const error = ref(null);
+// Dropdown options
+const entityTypes = ['Individual', 'Company', 'Investor', 'Trust'];
+const ownerTypes = ['Competitor', 'Seller', 'Investor', 'Professional'];
 
-    // Load owners when the component is mounted
-    onMounted(async () => {
-      try {
-        await ownerStore.loadOwners();
-      } catch (err) {
-        console.error('Error loading owners', err);
-        error.value = 'Failed to load owners';
-      } finally {
-        isLoading.value = false;
-      }
-    });
+const ownerStore = useOwnerStore();
+const editingId = ref(null);
+const editingData = ref({});
+const file = ref(null);
+const isLoading = ref(true);
+const error = ref(null);
 
-    const handleCreateOwner = async (newOwner) => {
-      await ownerStore.addOwner(newOwner);
-    };
-
-    const handleDeleteOwner = async (id) => {
-      await ownerStore.removeOwner(id);
-    };
-
-    const handleEditOwner = async (owner) => {
-      ownerStore.selectOwner(owner);
-      editingId.value = owner._id;
-      editingData.value = { ...owner }
-    };
-
-    const handleSaveEdit = async (id) => {
-      await ownerStore.saveOwner(id, editingData.value);
-      editingId.value = null;
-      editingData.value = {};
-      file.value = null;
-    };
-
-    const handleFileChange = (e) => {
-      file.value = e.target.files[0];
-    }
-
-    return {
-      ownerStore,
-      editingId,
-      editingData,
-      file,
-      isLoading,
-      error,
-      handleCreateOwner,
-      handleDeleteOwner,
-      handleEditOwner,
-      handleSaveEdit,
-      handleFileChange,
-    }
+// Load owners when the component is mounted
+onMounted(async () => {
+  try {
+    await ownerStore.loadOwners();
+  } catch (err) {
+    console.error('Error loading owners', err);
+    error.value = 'Failed to load owners';
+  } finally {
+    isLoading.value = false;
   }
+});
+
+const handleCreateOwner = async (newOwner) => {
+  await ownerStore.addOwner(newOwner);
+};
+
+const handleDeleteOwner = async (id) => {
+  await ownerStore.removeOwner(id);
+};
+
+const handleEditOwner = async (owner) => {
+  ownerStore.selectOwner(owner);
+  editingId.value = owner._id;
+  editingData.value = { ...owner }
+};
+
+const handleSaveEdit = async (id) => {
+  // const formData = new FormData();
+  // formData.append('name', editingData.value.name);
+  // formData.append('entityType', editingData.value.entityType);
+  // formData.append('ownerType', editingData.value.ownerType);
+  // formData.append('address', editingData.value.address);
+
+  // // include file if present
+  // if (file.value) {
+  //   formData.append('file', file.value);
+  // }
+
+  // // save owner with updated data
+  // await ownerStore.saveOwner(id, formData);
+
+  // editingId.value = null;
+  // editingData.value = {};
+  // file.value = null;
+
+  await ownerStore.saveOwner(id, editingData.value);
+  editingId.value = null;
+  editingData.value = {};
+  file.value = null;
+};
+
+const handleFileChange = (e) => {
+  file.value = e.target.files[0];
 }
+
 </script>

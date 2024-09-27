@@ -17,7 +17,7 @@ export const createOwner = async (ownerData) => {
 
   // validation
   if (!owner.isValid()) {
-    throw new Error("Invalid owner data");
+    throw new Error("Invalid owner data, when creating owner");
   }
 
   // save
@@ -25,7 +25,7 @@ export const createOwner = async (ownerData) => {
     const ownersCollection = getOwnersCollection();
     const result = await ownersCollection.insertOne(owner.toMongoDocument());
 
-    return { _id: result.instertedId, ...owner.toMongoDocument() };
+    return { _id: result.insertedId, ...owner.toMongoDocument() };
   } catch (error) {
     console.error("Error creating owner", error);
     throw new Error("Failed to create owner");
@@ -39,8 +39,8 @@ export const fetchOwners = async () => {
       throw new Error("Must be logged in to access MongoDB");
     }
 
-    const ownersCollectino = getOwnersCollection();
-    const owners = await ownersCollectino.find();
+    const ownersCollection = getOwnersCollection();
+    const owners = await ownersCollection.find();
 
     return owners.filter((owner) => owner && owner._id);
   } catch (error) {
@@ -55,7 +55,7 @@ export const updateOwner = async (ownerId, ownerData) => {
 
   // validation
   if (!owner.isValid()) {
-    throw new Error("Invalid owner data");
+    throw new Error("Invalid owner data, when updating owner");
   }
 
   // save
