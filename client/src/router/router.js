@@ -3,6 +3,7 @@ import Login from "../views/Login.vue";
 import Home from "../views/Home.vue";
 import SignUp from "../views/SignUp.vue";
 import Owners from "../views/Owners.vue";
+import LandHoldings from "../views/LandHoldings.vue";
 
 const routes = [
   {
@@ -24,7 +25,12 @@ const routes = [
     path: "/owners",
     name: "Owners",
     component: Owners,
-  }
+  },
+  {
+    path: "/land-holdings",
+    name: "LandHoldings",
+    component: LandHoldings,
+  },
 ];
 
 const router = createRouter({

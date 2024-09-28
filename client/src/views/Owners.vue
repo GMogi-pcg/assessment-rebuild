@@ -51,13 +51,15 @@
                 <option v-for="type in ownerTypes" :key="type" :value="type">{{ type }}</option>
               </select>
             </td>
-
-            <td class="py-2 px-4 border-b">
-              <input type="text" v-model="editingData.ownerType" class="shadow-md w-full" />
-            </td>
+            <!--Address Input-->
             <td class="py-2 px-4 border-b">
               <input type="text" v-model="editingData.address" class="shadow-md w-full" />
             </td>
+            <!-- Total Land Holdings (non-editable during edit mode) -->
+            <td class="py-2 px-4 border-b text-center">
+              {{ owner.totalLandHoldings }}
+            </td>
+            <!-- Files Input (Editable) -->
             <td class="py-2 px-4 border-b">
               <input type="file" @change="handleFileChange" />
               <div v-if="editingData.files">
@@ -66,6 +68,7 @@
                 </div>
               </div>
             </td>
+            <!-- Save Button -->
             <td class="py-2 px-4 border-b">
               <button @click="handleSaveEdit(owner._id)"
                 class="bg-gray-700 hover:bg-gray-600 text-white px-4 rounded">Save</button>

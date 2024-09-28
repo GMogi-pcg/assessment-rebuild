@@ -3,7 +3,7 @@ import { Owner } from "../models/Owner";
 import * as Realm from "realm-web";
 import app from "./mongoClient";
 
-const getOwnersCollection = () => {
+export const getOwnersCollection = () => {
   const mongoClient = getMongoClient();
   if (!mongoClient) {
     throw new Error("Must be logged in to access MongoDB");
