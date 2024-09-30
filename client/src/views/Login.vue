@@ -1,4 +1,3 @@
-// need to add logic to handle the form submission like @submit.prevent="handleLogin"
 
 <template>
   <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-10">
@@ -22,28 +21,25 @@
   </div>
 </template>
 
-<script>
-import { loginUser } from '../services/authService';
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/authStore';
 
-export default {
-  data() {
-    return {
-      email: '',
-      password: ''
-    };
-  },
-  methods: {
-    async handleLogin() {
-      try {
-        // attempt to log in using authService
-        const user = await loginUser(this.email, this.password);
-        console.log("Login Successful", user);
-        this.$router.push('/home');
-      } catch (error) {
-        console.error("Error during login", error);
-        alert("Login failed. Please try again.");
-      }
-    }
+const email = ref('');
+const password = ref('');
+const router = useRouter();
+const authStore = useAuthStore();
+
+const handleLogin = async () => {
+  try{
+    await authStore.login(email.value, password.value);
+    console.log('User logged in', authStore.currentUser);
+
+    router.push({ name: 'Home' });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    alert('Error logging in. Please try again.');
   }
 };
 </script>
