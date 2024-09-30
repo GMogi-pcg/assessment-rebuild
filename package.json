@@ -1,8 +1,24 @@
 {
+  "name": "assessment-rebuild",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
-    "realm-web": "^2.0.1"
+    "pinia": "^2.2.2",
+    "realm-web": "^2.0.1",
+    "vue": "^3.4.37",
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
     "vite": "^5.4.8"
   }
 }
