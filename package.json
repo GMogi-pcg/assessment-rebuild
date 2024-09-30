@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "realm-web": "^2.0.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.8"
   }
 }
