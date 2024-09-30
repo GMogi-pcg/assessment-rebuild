@@ -15,7 +15,11 @@
       </div>
       <div>
         <button type="submit" class="bg-gray-900 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Submit</button>
-        <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Sign Up</button>
+        
+      </div>
+      <div>
+        <p>Don't have an account? <router-link to="/signup" class="text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Sign Up</router-link></p>
+        
       </div>
     </form>
   </div>
