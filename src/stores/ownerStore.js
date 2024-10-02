@@ -4,6 +4,7 @@ import {
   createOwner,
   deleteOwner,
   updateOwner,
+  uploadFiles,
 } from "../services/ownerService";
 
 export const useOwnerStore = defineStore("ownerStore", {
@@ -37,9 +38,15 @@ export const useOwnerStore = defineStore("ownerStore", {
       }
     },
     // need to create Update owner
-    async saveOwner(id, updatedOwner, file = null) {
+    async saveOwner(id, updatedOwner, files = []) {
       try {
-        const savedOwner = await updateOwner(id, updatedOwner, file);
+
+        if (files.length > 0) {
+          const uploadedFileUrls = await uploadFiles(files);
+
+          updatedOwner.fileUrls = uploadedFileUrls ? [...updatedOwner.fileUrls, ...uploadedFileUrls] : updatedOwner.fileUrls;
+        }
+        const savedOwner = await updateOwner(id, updatedOwner);
         this.owners = this.owners.map((owner) => owner._id === id ? savedOwner : owner);
       } catch (error) {
         this.error = "Failed to update owner.";

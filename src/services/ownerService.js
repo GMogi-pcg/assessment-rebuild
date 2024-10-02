@@ -95,7 +95,7 @@ export const fetchOwners = async () => {
 };
 
 // Update owner
-export const updateOwner = async (ownerId, ownerData, file = null) => {
+export const updateOwner = async (ownerId, ownerData, files = null) => {
   const owner = new Owner(ownerData);
 
   // validation
@@ -103,9 +103,9 @@ export const updateOwner = async (ownerId, ownerData, file = null) => {
     throw new Error("Invalid owner data, when updating owner");
   }
 
-  let fileUrls = null;
+  let fileUrls = [];
 
-  if (file && file.length > 0) {
+  if (files && files.length > 0) {
     try {
       fileUrls = await uploadFiles(files);
     } catch (error) {

@@ -166,33 +166,16 @@ const handleEditOwner = async (owner) => {
 
 const handleSaveEdit = async (id) => {
   const updatedOwner = { ...editingData.value };
-  // const formData = new FormData();
-  // formData.append('name', editingData.value.name);
-  // formData.append('entityType', editingData.value.entityType);
-  // formData.append('ownerType', editingData.value.ownerType);
-  // formData.append('address', editingData.value.address);
 
-  // // include file if present
-  // if (file.value) {
-  //   formData.append('file', file.value);
-  // }
-
-  // // save owner with updated data
-  // await ownerStore.saveOwner(id, formData);
-
-  // editingId.value = null;
-  // editingData.value = {};
-  // file.value = null;
-
-  if (file.value) {
-    await ownerStore.saveOwner(id, editingData.value, file.value);
+  if (selectedFiles.value.length > 0) {
+    await ownerStore.saveOwner(id, editingData.value, selectedFiles.value);
   } else {
     await ownerStore.saveOwner(id, updatedOwner);
   }
 
   editingId.value = null;
   editingData.value = {};
-  file.value = null;
+  selectedFiles.value = [];
 };
 
 const handleFileChange = (event) => {

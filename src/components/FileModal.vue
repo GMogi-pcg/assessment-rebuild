@@ -1,4 +1,7 @@
 <template>
+  <!--Background Overlay-->
+  <div v-if="isVisible" class="fixed inset-0 bg-black bg-opacity-50 z-10"></div>
+
   <div v-if="isVisible" class="fixed z-10 inset-0 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen">
       <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full relative" >
