@@ -8,14 +8,14 @@
 
       <!-- Entity Type Dropdown -->
       <select v-model="owner.entityType" required
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         <option disabled value="">Select Entity Type</option>
         <option v-for="type in entityTypes" :key="type" :value="type">{{ type }}</option>
       </select>
 
       <!-- Owner Type Dropdown -->
       <select v-model="owner.ownerType" required
-        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        class="shadow  border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
         <option disabled value="">Select Owner Type</option>
         <option v-for="type in ownerTypes" :key="type" :value="type">{{ type }}</option>
       </select>
@@ -28,7 +28,7 @@
     <!--FileUpload-->
     <div class="py-2">
       <h3 class="font-bold mb-2">Upload Files</h3>
-      <input type="file" @change="handleFileChange" class="py-2" multiple />
+      <input type="file" @change="handleFileChange" ref="fileInput" class="py-2" multiple />
     </div>
 
     <!-- List of Selected Files -->
@@ -63,6 +63,7 @@ const owner = reactive({
 });
 
 const selectedFiles = ref([]);
+const fileInput = ref(null);
 
 // file upload event
 const handleFileChange = (event) => {
@@ -74,6 +75,18 @@ const handleSave = async () => {
   try {
     await ownerStore.addOwner({ ...owner }, selectedFiles.value || []);
     alert('Owner added successfully');
+
+    // reset form
+    owner.name = '';
+    owner.entityType = '';
+    owner.ownerType = '';
+    owner.address = '';
+    selectedFiles.value = [];
+
+    if (fileInput.value) {
+      fileInput.value.value = '';
+    } 
+
   } catch (error) {
     console.error('Error adding owner:', error);
     alert('Failed to add owner');

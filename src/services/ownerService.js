@@ -43,7 +43,7 @@ export const uploadFiles = async (files) => {
 };
 
 // create a new owner
-export const createOwner = async (ownerData, files) => {
+export const createOwner = async (ownerData, files = []) => {
   const owner = new Owner(ownerData);
 
   // Validate owner
@@ -53,9 +53,9 @@ export const createOwner = async (ownerData, files) => {
 
   // Upload files if any
   let fileUrls = [];
-  if (files && files.length > 0) {
+  if (files.length > 0) {
     try {
-      fileUrls = await uploadFiles(files);  // Upload all files at once
+      fileUrls = await uploadFiles(files); // Upload all files at once
     } catch (error) {
       console.error("Error uploading files", error);
       throw error;
@@ -64,8 +64,10 @@ export const createOwner = async (ownerData, files) => {
 
   // Prepare the owner document
   const ownerDocument = owner.toMongoDocument();
-  ownerDocument.fileUrls = fileUrls;
-
+  if (fileUrls.length > 0) {
+    ownerDocument.fileUrls = fileUrls;
+  }
+  console.log('File URLS:',fileUrls);
   // Save owner in MongoDB
   try {
     const ownersCollection = getOwnersCollection();

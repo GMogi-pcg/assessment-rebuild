@@ -151,7 +151,11 @@ const closeModal = () => {
 };
 
 const handleCreateOwner = async (newOwner) => {
-  await ownerStore.addOwner(newOwner, selectedFiles.value);
+  if(selectedFiles.value.length > 0) {
+    await ownerStore.addOwner(newOwner, selectedFiles.value);
+  } else {
+    await ownerStore.addOwner(newOwner);
+  }
 };
 
 const handleDeleteOwner = async (id) => {
