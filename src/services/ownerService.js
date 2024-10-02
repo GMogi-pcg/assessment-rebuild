@@ -11,21 +11,66 @@ export const getOwnersCollection = () => {
   return mongoClient.db("PCGDB").collection("owners");
 };
 
+// file upload function
+export const uploadFiles = async (files) => {
+  const fileUrls = [];
+
+  for (const file of files) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch(
+        "https://quiet-fire-9731.gmogi-work.workers.dev/",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        fileUrls.push(result.fileUrls);
+      } else {
+        throw new Error("Failed to upload file");
+      }
+    } catch (error) {
+      console.error("Error uploading file", error);
+      throw error;
+    }
+  }
+  return fileUrls;
+};
+
 // create a new owner
-export const createOwner = async (ownerData) => {
+export const createOwner = async (ownerData, files) => {
   const owner = new Owner(ownerData);
 
-  // validation
+  // Validate owner
   if (!owner.isValid()) {
     throw new Error("Invalid owner data, when creating owner");
   }
 
-  // save
+  // Upload files if any
+  let fileUrls = [];
+  if (files && files.length > 0) {
+    try {
+      fileUrls = await uploadFiles(files);  // Upload all files at once
+    } catch (error) {
+      console.error("Error uploading files", error);
+      throw error;
+    }
+  }
+
+  // Prepare the owner document
+  const ownerDocument = owner.toMongoDocument();
+  ownerDocument.fileUrls = fileUrls;
+
+  // Save owner in MongoDB
   try {
     const ownersCollection = getOwnersCollection();
-    const result = await ownersCollection.insertOne(owner.toMongoDocument());
-
-    return { _id: result.insertedId, ...owner.toMongoDocument() };
+    const result = await ownersCollection.insertOne(ownerDocument);
+    return { _id: result.insertedId, ...ownerDocument };
   } catch (error) {
     console.error("Error creating owner", error);
     throw new Error("Failed to create owner");
@@ -50,12 +95,29 @@ export const fetchOwners = async () => {
 };
 
 // Update owner
-export const updateOwner = async (ownerId, ownerData) => {
+export const updateOwner = async (ownerId, ownerData, file = null) => {
   const owner = new Owner(ownerData);
 
   // validation
   if (!owner.isValid()) {
     throw new Error("Invalid owner data, when updating owner");
+  }
+
+  let fileUrls = null;
+
+  if (file && file.length > 0) {
+    try {
+      fileUrls = await uploadFiles(files);
+    } catch (error) {
+      console.error("Error uploading file", error);
+      throw error;
+    }
+  }
+
+  const ownerDocument = owner.toMongoDocument();
+
+  if (fileUrls.length > 0) {
+    ownerDocument.fileUrls = fileUrls;
   }
 
   // save
@@ -83,5 +145,4 @@ export const deleteOwner = async (ownerId) => {
     console.error("Error deleting owner", error);
     throw new Error("Failed to delete owner");
   }
-
 };

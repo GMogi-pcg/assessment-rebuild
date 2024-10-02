@@ -5,14 +5,14 @@ export class Owner {
     ownerType,
     address,
     totalLandHoldings = 0,
-    files = [],
+    fileUrls = [],
   }) {
     this.name = name;
     this.entityType = entityType;
     this.ownerType = ownerType;
     this.address = address;
     this.totalLandHoldings = totalLandHoldings;
-    this.files = files;
+    this.fileUrls = fileUrls;
   }
 
   // client side validation
@@ -37,7 +37,7 @@ export class Owner {
       ownerType: this.ownerType,
       address: this.address,
       totalLandHoldings: this.totalLandHoldings,
-      files: this.files,
+      fileUrls: this.fileUrls,
     };
   }
 }

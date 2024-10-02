@@ -27,19 +27,19 @@ export const useOwnerStore = defineStore("ownerStore", {
       }
     },
     // create a new owner
-    async addOwner(newOwner) {
+    async addOwner(newOwner, file) {
       try {
-        const createdOwner = await createOwner(newOwner);
+        const createdOwner = await createOwner(newOwner, file);
         this.owners.push(createdOwner);
       } catch (error) {
-        this.error = "Failed to load owners.";
+        this.error = "Failed to create owners.";
         console.error(error);
       }
     },
     // need to create Update owner
-    async saveOwner(id, updatedOwner) {
+    async saveOwner(id, updatedOwner, file = null) {
       try {
-        const savedOwner = await updateOwner(id, updatedOwner);
+        const savedOwner = await updateOwner(id, updatedOwner, file);
         this.owners = this.owners.map((owner) => owner._id === id ? savedOwner : owner);
       } catch (error) {
         this.error = "Failed to update owner.";

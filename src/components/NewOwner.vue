@@ -20,9 +20,25 @@
         <option v-for="type in ownerTypes" :key="type" :value="type">{{ type }}</option>
       </select>
 
+      <!-- Address Input -->
       <input v-model="owner.address" placeholder="Address"
         class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+
     </div>
+    <!--FileUpload-->
+    <div class="py-2">
+      <h3 class="font-bold mb-2">Upload Files</h3>
+      <input type="file" @change="handleFileChange" class="py-2" multiple />
+    </div>
+
+    <!-- List of Selected Files -->
+    <div class="py-2">
+      <h3 class="font-bold mb-2">Selected Files</h3>
+      <ul>
+        <li v-for="(file, index) in selectedFiles" :key="index">{{ file.name }}</li>
+      </ul>
+    </div>
+
     <div class="py-2">
       <button @click="handleSave"
         class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">Save</button>
@@ -31,9 +47,10 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
+import { useOwnerStore } from '../stores/ownerStore';
 
-const emit = defineEmits(['save']);
+const ownerStore = useOwnerStore();
 
 const entityTypes = ['Individual', 'Company', 'Investor', 'Trust'];
 const ownerTypes = ['Competitor', 'Seller', 'Investor', 'Professional'];
@@ -45,8 +62,22 @@ const owner = reactive({
   address: '',
 });
 
-function handleSave() {
-  emit('save', { ...owner });
+const selectedFiles = ref([]);
+
+// file upload event
+const handleFileChange = (event) => {
+  selectedFiles.value = Array.from(event.target.files);
+};
+
+
+const handleSave = async () => {
+  try {
+    await ownerStore.addOwner({ ...owner }, selectedFiles.value || []);
+    alert('Owner added successfully');
+  } catch (error) {
+    console.error('Error adding owner:', error);
+    alert('Failed to add owner');
+  }
 }
 
 </script>

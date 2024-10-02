@@ -83,10 +83,9 @@
             <td class="py-2 px-4 border-b text-center">{{ owner.address }}</td>
             <td class="py-2 px-4 border-b text-center">{{ owner.totalLandHoldings }}</td>
             <td class="py-2 px-4 border-b text-center">
-              <div>
-                <a v-for="(file, index) in owner.files" :key="index" :href="`/uploads/${file}`" target="_blank">{{ file
-                  }}</a>
-              </div>
+              <button @click="openFileModal(owner)" class="text-blue-500 hover:underline">
+                View Files
+              </button>
             </td>
             <td class="py-2 px-4 border-b text-center">
               <button @click="handleEditOwner(owner)"
@@ -100,12 +99,15 @@
         </tr>
       </tbody>
     </table>
+    <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedOwnerName"
+      @close="closeModal" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import NewOwner from '../components/NewOwner.vue';
+import FileModal from '../components/FileModal.vue';
 import { useOwnerStore } from '../stores/ownerStore';
 
 // Dropdown options
@@ -118,6 +120,12 @@ const editingData = ref({});
 const file = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
+const selectedFiles = ref([]);
+
+// Modal state
+const isModalVisible = ref(false);
+const selectedFileUrls = ref([]);
+const selectedOwnerName = ref('');
 
 // Load owners when the component is mounted
 onMounted(async () => {
@@ -131,8 +139,19 @@ onMounted(async () => {
   }
 });
 
+const openFileModal = (owner) => {
+  console.log('Files URLS:', owner.fileUrls)
+  selectedFileUrls.value = owner.fileUrls || [];
+  selectedOwnerName.value = owner.name;
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
 const handleCreateOwner = async (newOwner) => {
-  await ownerStore.addOwner(newOwner);
+  await ownerStore.addOwner(newOwner, selectedFiles.value);
 };
 
 const handleDeleteOwner = async (id) => {
@@ -146,6 +165,7 @@ const handleEditOwner = async (owner) => {
 };
 
 const handleSaveEdit = async (id) => {
+  const updatedOwner = { ...editingData.value };
   // const formData = new FormData();
   // formData.append('name', editingData.value.name);
   // formData.append('entityType', editingData.value.entityType);
@@ -164,14 +184,19 @@ const handleSaveEdit = async (id) => {
   // editingData.value = {};
   // file.value = null;
 
-  await ownerStore.saveOwner(id, editingData.value);
+  if (file.value) {
+    await ownerStore.saveOwner(id, editingData.value, file.value);
+  } else {
+    await ownerStore.saveOwner(id, updatedOwner);
+  }
+
   editingId.value = null;
   editingData.value = {};
   file.value = null;
 };
 
-const handleFileChange = (e) => {
-  file.value = e.target.files[0];
+const handleFileChange = (event) => {
+  selectedFiles.value = [...event.target.files];
 }
 
 </script>
