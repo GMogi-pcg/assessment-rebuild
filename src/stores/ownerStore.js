@@ -33,24 +33,35 @@ export const useOwnerStore = defineStore("ownerStore", {
         const createdOwner = await createOwner(newOwner, file);
         this.owners.push(createdOwner);
       } catch (error) {
-        this.error = "Failed to create owners.";
-        console.error(error);
+        if (
+          error.message.includes(
+            "An owner with same name and address already exists"
+          )
+        ) {
+          alert("An owner with same name and address already exists");
+        } else {
+          this.error = "Failed to create owners.";
+          console.error(error);
+        }
       }
     },
     // need to create Update owner
     async saveOwner(id, updatedOwner, files = []) {
       try {
-
         if (files.length > 0) {
           const uploadedFileUrls = await uploadFiles(files);
 
-          updatedOwner.fileUrls = uploadedFileUrls ? [...updatedOwner.fileUrls, ...uploadedFileUrls] : updatedOwner.fileUrls;
+          updatedOwner.fileUrls = uploadedFileUrls
+            ? [...updatedOwner.fileUrls, ...uploadedFileUrls]
+            : updatedOwner.fileUrls;
         }
         const savedOwner = await updateOwner(id, updatedOwner);
-        this.owners = this.owners.map((owner) => owner._id === id ? savedOwner : owner);
+        this.owners = this.owners.map((owner) =>
+          owner._id === id ? savedOwner : owner
+        );
       } catch (error) {
         this.error = "Failed to update owner.";
-        console.error(error)
+        console.error(error);
       }
     },
 
@@ -66,6 +77,6 @@ export const useOwnerStore = defineStore("ownerStore", {
     },
     selectOwner(owner) {
       this.selectedOwner = owner;
-    }
+    },
   },
 });

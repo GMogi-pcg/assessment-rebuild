@@ -44,6 +44,18 @@ export const uploadFiles = async (files) => {
 
 // create a new owner
 export const createOwner = async (ownerData, files = []) => {
+  const ownersCollection = getOwnersCollection();
+
+  // logic for checking if owner with same name and address exists
+  const existingOwner = await ownersCollection.findOne({
+    name: ownerData.name,
+    address: ownerData.address,
+  });
+
+  if (existingOwner) {
+    throw new Error("An owner with same name and address already exists");
+  }
+
   const owner = new Owner(ownerData);
 
   // Validate owner
@@ -67,10 +79,9 @@ export const createOwner = async (ownerData, files = []) => {
   if (fileUrls.length > 0) {
     ownerDocument.fileUrls = fileUrls;
   }
-  console.log('File URLS:',fileUrls);
+  console.log("File URLS:", fileUrls);
   // Save owner in MongoDB
   try {
-    const ownersCollection = getOwnersCollection();
     const result = await ownersCollection.insertOne(ownerDocument);
     return { _id: result.insertedId, ...ownerDocument };
   } catch (error) {
@@ -129,7 +140,7 @@ export const updateOwner = async (ownerId, ownerData, files = null) => {
       { _id: new Realm.BSON.ObjectId(ownerId) },
       { $set: owner.toMongoDocument() }
     );
-    return { _id: ownerId, ...owner.toMongoDocument() };
+    return { _id: ownerId, ...ownerDocument };
   } catch (error) {
     console.error("Error updating owner", error);
     throw new Error("Failed to update owner");
@@ -139,9 +150,21 @@ export const updateOwner = async (ownerId, ownerData, files = null) => {
 // Delete owner
 export const deleteOwner = async (ownerId) => {
   try {
-    const ownersCollection = getOwnersCollection();
+    const mongoClient = getMongoClient();
+    const ownersCollection = mongoClient.db("PCGDB").collection("owners");
+    const landholdingsCollection = mongoClient
+      .db("PCGDB")
+      .collection("landholdings");
+
+    const objectIdOwnerId = new Realm.BSON.ObjectId(ownerId);
+
+    const result = await landholdingsCollection.deleteMany({
+      owner: objectIdOwnerId,
+    });
+    console.log("Landholdings deletion result:", result);
+
     return await ownersCollection.deleteOne({
-      _id: new Realm.BSON.ObjectId(ownerId),
+      _id: objectIdOwnerId,
     });
   } catch (error) {
     console.error("Error deleting owner", error);

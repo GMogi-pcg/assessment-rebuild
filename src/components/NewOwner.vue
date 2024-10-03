@@ -74,7 +74,6 @@ const handleFileChange = (event) => {
 const handleSave = async () => {
   try {
     await ownerStore.addOwner({ ...owner }, selectedFiles.value || []);
-    alert('Owner added successfully');
 
     // reset form
     owner.name = '';
@@ -85,11 +84,12 @@ const handleSave = async () => {
 
     if (fileInput.value) {
       fileInput.value.value = '';
-    } 
+    }
 
   } catch (error) {
-    console.error('Error adding owner:', error);
-    alert('Failed to add owner');
+      console.error('Error adding owner:', error);
+      alert('Failed to add owner');
+    
   }
 }
 

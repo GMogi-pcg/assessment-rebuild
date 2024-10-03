@@ -39,14 +39,14 @@
       <!--Township-->
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2">Township</label>
-        <input :value="landHolding.township" @input="handleTownshipChange" placeholder="(e.g., 123N)" maxlength="4"
+        <input :value="landHolding.township" @input="handleTownshipChange" placeholder="(e.g., 123N or 123S)" maxlength="4"
           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
           <p v-if="!isTownshipValid" class="text-red-500 text-xs italic">Section must be 3 digits and end with N or S</p>
       </div>
       <!--Range-->
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2">Range</label>
-        <input :value="landHolding.range" @input="handleRangeChange" placeholder="(e.g., 123N)" maxlength="4"
+        <input :value="landHolding.range" @input="handleRangeChange" placeholder="(e.g., 123W or 123E)" maxlength="4"
           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
           <p v-if="!isRangeValid" class="text-red-500 text-xs italic">Section must be 3 digits and end with E or W</p>
       </div>
