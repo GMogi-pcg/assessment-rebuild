@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <NewOwner @save="handleCreateOwner" />
+    <NewOwner  />
     <div class="text-center my-4">
       <h2 class="text-xl font-bold mb-4">Owners</h2>
     </div>
@@ -93,7 +93,6 @@
               <button @click="handleDeleteOwner(owner._id)"
                 class="bg-red-700 hover:bg-red-600 text-white px-4 h-8 my-1 rounded">Delete</button>
             </td>
-
           </template>
 
         </tr>
@@ -150,13 +149,6 @@ const closeModal = () => {
   isModalVisible.value = false;
 };
 
-const handleCreateOwner = async (newOwner) => {
-  if(selectedFiles.value.length > 0) {
-    await ownerStore.addOwner(newOwner, selectedFiles.value);
-  } else {
-    await ownerStore.addOwner(newOwner);
-  }
-};
 
 const handleDeleteOwner = async (id) => {
   await ownerStore.removeOwner(id);

@@ -12,34 +12,25 @@ export class LandHoldings {
     township,
     range,
     titleSource,
-    files = [],
+    fileUrls = [],
   }) {
     // Ensure owner is a valid ObjectId or null
-    if (owner && typeof owner === 'object' && owner._id) {
-      this.owner = new Realm.BSON.ObjectId(owner._id); // Handle Vue Proxy object
-    } else if (typeof owner === 'string') {
-      this.owner = new Realm.BSON.ObjectId(owner); // Handle string format
-    } else {
-      this.owner = owner ? new Realm.BSON.ObjectId(owner) : null; // Fallback to null
+    try {
+      if (typeof owner === 'string') {
+        this.owner = new Realm.BSON.ObjectId(owner); // Handle string format
+      } else if (owner && typeof owner === 'object' && owner._id) {
+        this.owner = new Realm.BSON.ObjectId(owner._id); // Handle Vue proxy
+      } else {
+        this.owner = owner ? new Realm.BSON.ObjectId(owner) : null; // Fallback to null
+      }
+
+    } catch (error) {
+      console.error("Invalid ObjectId for owner", owner);
+      throw new Error("Invalid ObjectId for owner");
     }
 
-    // Log incoming data to ensure constructor is receiving data
-    console.log("Instantiating LandHoldings with data:", {
-      name,
-      owner,
-      legalEntity,
-      netMineralAcres,
-      mineralOwnerRoyalty,
-      sectionName,
-      section,
-      township,
-      range,
-      titleSource,
-      files,
-    });
 
     this.name = name || `${sectionName}-${legalEntity}`;
-    this.owner = owner ? new Realm.BSON.ObjectId(owner) : null;
     this.legalEntity = legalEntity;
     this.netMineralAcres = netMineralAcres;
     this.mineralOwnerRoyalty = mineralOwnerRoyalty;
@@ -48,7 +39,7 @@ export class LandHoldings {
     this.township = township;
     this.range = range;
     this.titleSource = titleSource;
-    this.files = files;
+    this.fileUrls = fileUrls;
   }
 
   // client side validation
@@ -59,14 +50,6 @@ export class LandHoldings {
     const isValidTownship = /^[0-9]{3}[NS]$/.test(this.township);
     const isValidRange = /^[0-9]{3}[EW]$/.test(this.range);
 
-    // Logging each field for debugging
-    console.log("Validating land holding:");
-    console.log("Name:", this.name);
-    console.log("Legal Entity:", this.legalEntity);
-    console.log("Section:", this.section, "Valid:", isValidSection);
-    console.log("Township:", this.township, "Valid:", isValidTownship);
-    console.log("Range:", this.range, "Valid:", isValidRange);
-    console.log("Title Source:", this.titleSource);
 
     return (
       typeof this.name === "string" &&
@@ -98,7 +81,7 @@ export class LandHoldings {
       township: this.township,
       range: this.range,
       titleSource: this.titleSource,
-      files: this.files,
+      fileUrls: this.fileUrls,
     };
   }
 }

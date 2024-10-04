@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <NewLandHolding @save="handleCreateLandHolding" />
+    <NewLandHolding  />
     <div class="text-center my-4">
       <h2 class="text-xl font-bold mb-4">Land Holdings</h2>
     </div>
@@ -68,6 +68,7 @@
                 <option v-for="source in titleSourceOptions" :key="source" :value="source">{{ source }}</option>
               </select>
             </td>
+            <!--Files Input (Editable)-->
             <td class="py-2 px-4 border-b w-4/5">
               <input type="file" @change="handleFileChange" />
               <div v-if="editingData.files">
@@ -96,10 +97,9 @@
             <td class="py-2 px-4 border-b text-center">{{ landHolding.range }}</td>
             <td class="py-2 px-4 border-b text-center">{{ landHolding.titleSource }}</td>
             <td class="py-2 px-4 border-b text-center">
-              <div>
-                <a v-for="(file, index) in landHolding.files" :key="index" :href="`/uploads/${file}`" target="_blank">{{
-                  file }}</a>
-              </div>
+              <button @click="openFileModal(landHolding)" class="text-blue-500 hover:no-underline">
+                View Files
+              </button>
             </td>
             <td class="py-2 px-4 border-b text-center">
               <button @click="handleEditLandHolding(landHolding)"
@@ -112,6 +112,7 @@
         </tr>
       </tbody>
     </table>
+    <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedLandholding" @close="closeModal" />
   </div>
 </template>
 
@@ -119,6 +120,7 @@
 import { ref, onMounted } from 'vue';
 import NewLandHolding from '../components/NewLandHolding.vue';
 import { useLandHoldingStore } from '../stores/landHoldingStore';
+import FileModal from '../components/FileModal.vue';
 
 // Dropdown options for title source
 const titleSourceOptions = ['Class A', 'Class B', 'Class C', 'Class D'];
@@ -129,6 +131,12 @@ const editingData = ref({});
 const file = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
+const selectedFiles = ref([]);
+
+// Modal state
+const isModalVisible = ref(false);
+const selectedFileUrls = ref([]);
+const selectedLandholding = ref('');
 
 // Load land holdings when the component is mounted
 onMounted(async () => {
@@ -142,20 +150,36 @@ onMounted(async () => {
   }
 });
 
-const handleCreateLandHolding = async (newLandHolding) => {
-
-  try {
-    // this is where name and sectionName are dynamically constructed
-    newLandHolding.sectionName = `${newLandHolding.section}-${newLandHolding.township}-${newLandHolding.range}`;
-    newLandHolding.name = `${newLandHolding.sectionName} ${newLandHolding.legalEntity}`;
-
-    await landHoldingStore.addLandHolding(newLandHolding);
-  } catch (error) {
-    console.error('Error creating land holding', error);
-    error.value = 'Failed to create land holding';
-  }
-
+const openFileModal = (landHolding) => {
+  console.log('Files URLS:', landHolding.fileUrls)
+  selectedFileUrls.value = landHolding.fileUrls;
+  selectedLandholding.value = landHolding.name;
+  isModalVisible.value = true;
 };
+
+const closeModal = () => {
+  isModalVisible.value = false;
+};
+
+// const handleCreateLandHolding = async (newLandHolding) => {
+
+//   try {
+//     if (selectedFiles.value.length > 0) {
+//       await landHoldingStore.addLandHolding(newLandHolding, selectedFiles.value);
+//     } else {
+//       await landHoldingStore.addLandHolding(newLandHolding);
+//     }
+//     // this is where name and sectionName are dynamically constructed
+//     newLandHolding.sectionName = `${newLandHolding.section}-${newLandHolding.township}-${newLandHolding.range}`;
+//     newLandHolding.name = `${newLandHolding.sectionName} ${newLandHolding.legalEntity}`;
+
+//     await landHoldingStore.addLandHolding(newLandHolding);
+//   } catch (error) {
+//     console.error('Error creating land holding', error);
+//     error.value = 'Failed to create land holding';
+//   }
+
+// };
 const handleDeleteLandHolding = async (id) => {
   try {
     await landHoldingStore.removeLandHolding(id);
@@ -172,30 +196,43 @@ const handleEditLandHolding = async (landHolding) => {
 };
 
 const handleSaveEdit = async (id) => {
-  try {
-    if  (editingData.value.owner && editingData.value.owner instanceof Object && editingData.value.owner._id) {
-      editingData.value.owner = new Realm.BSON.ObjectId(editingData.value.owner);
+  const updatedLandHolding = { ...editingData.value };
 
-    } else if (typeof editingData.value.owner === 'string') {
-      editingData.value.owner = new Realm.BSON.ObjectId(editingData.value.owner); 
-    }
-    editingData.value.sectionName = `${editingData.value.township}-${editingData.value.range}-${editingData.value.section}`;
-    editingData.value.name = `${editingData.value.sectionName} ${editingData.value.legalEntity}`;
-    await landHoldingStore.saveLandHolding(id, editingData.value);
-    editingId.value = null;
-    editingData.value = {};
-    file.value = null;
-  } catch (error) {
-    console.error("Failed to save the land holding:", error);
-
+  if (selectedFiles.value.length > 0) {
+    await landHoldingStore.saveLandHolding(id, editingData.value, selectedFiles.value);
+  } else {
+    await landHoldingStore.saveLandHolding(id, updatedLandHolding);
   }
+
+  editingId.value = null;
+  editingData.value = {};
+  selectedFiles.value = []; 
+
+
+  // try {
+  //   if  (editingData.value.owner && editingData.value.owner instanceof Object && editingData.value.owner._id) {
+  //     editingData.value.owner = new Realm.BSON.ObjectId(editingData.value.owner);
+
+  //   } else if (typeof editingData.value.owner === 'string') {
+  //     editingData.value.owner = new Realm.BSON.ObjectId(editingData.value.owner); 
+  //   }
+  //   editingData.value.sectionName = `${editingData.value.township}-${editingData.value.range}-${editingData.value.section}`;
+  //   editingData.value.name = `${editingData.value.sectionName} ${editingData.value.legalEntity}`;
+  //   await landHoldingStore.saveLandHolding(id, editingData.value);
+  //   editingId.value = null;
+  //   editingData.value = {};
+  //   file.value = null;
+  // } catch (error) {
+  //   console.error("Failed to save the land holding:", error);
+
+  // }
 
 
 
 
 };
 
-const handleFileChange = (e) => {
-  file.value = e.target.files[0];
+const handleFileChange = (event) => {
+  selectedFiles.value = [...event.target.files];
 };
 </script>

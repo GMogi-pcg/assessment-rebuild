@@ -45,7 +45,7 @@ export const useOwnerStore = defineStore("ownerStore", {
         }
       }
     },
-    // need to create Update owner
+    //  Update owner
     async saveOwner(id, updatedOwner, files = []) {
       try {
         if (files.length > 0) {

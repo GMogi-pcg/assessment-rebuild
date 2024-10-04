@@ -4,6 +4,7 @@ import {
   createLandHolding,
   deleteLandHolding,
   updateLandHolding,
+  uploadFiles,
 } from "../services/landHoldingService";
 
 export const useLandHoldingStore = defineStore("landHoldingStore", {
@@ -28,23 +29,37 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
     },
 
     // create a new land holding
-    async addLandHolding(newLandHolding) {
+    async addLandHolding(newLandHolding, file) {
       this.isLoading = true;
       try {
-        console.log('Creating land holding with data from store',newLandHolding);
-        const createdLandHolding = await createLandHolding(newLandHolding);
-        console.log('Created land holding successfully',createdLandHolding);
+        console.log(
+          "Creating land holding with data from store",
+          newLandHolding
+        );
+        const createdLandHolding = await createLandHolding(
+          newLandHolding,
+          file
+        );
+        console.log("Created land holding successfully", createdLandHolding);
         this.landHoldings.push(createdLandHolding);
       } catch (error) {
         this.error = "Failed to create land holding.";
-        console.error('Error adding land',error);
+        console.error("Error adding land", error);
       } finally {
         this.isLoading = false;
       }
     },
     // update land holding
-    async saveLandHolding(id, updatedLandHolding) {
+    async saveLandHolding(id, updatedLandHolding, files = []) {
       try {
+        if (files.length > 0) {
+          const uploadedFileUrls = await uploadFiles(files);
+
+          updatedLandHolding.fileUrls = uploadedFileUrls
+            ? [...updatedLandHolding.fileUrls, ...uploadedFileUrls]
+            : updatedLandHolding.fileUrls;
+        }
+
         const savedLandHolding = await updateLandHolding(
           id,
           updatedLandHolding
