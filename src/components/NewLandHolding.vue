@@ -55,7 +55,7 @@
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2">Title Source</label>
         <select v-model="landHolding.titleSource" required
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
           <option disabled value="">Select Title Source</option>
           <option v-for="type in titleSourceOptions" :key="type" :value="type">{{ type }}</option>
         </select>
@@ -132,7 +132,7 @@ function handleSectionChange(event) {
 };
 
 function handleTownshipChange(event) {
-  const value = event.target.value;
+  const value = event.target.value.toUpperCase();
   if (/^\d{0,3}[NS]?$/.test(value)) {
     landHolding.township = value;
   } else {
@@ -144,7 +144,7 @@ function handleTownshipChange(event) {
 };
 
 function handleRangeChange(event) {
-  const value = event.target.value;
+  const value = event.target.value.toUpperCase();
   if (/^\d{0,3}[EW]?$/.test(value)) {
     landHolding.range = value;
   } else {
@@ -178,6 +178,16 @@ const handleSave = async () => {
   // emit('save', { ...landHolding });
   try {
     await landHoldingStore.addLandHolding({ ...landHolding }, selectedFiles.value || []);
+
+    // reset form
+    landHolding.legalEntity = '';
+    landHolding.owner = '';
+    landHolding.netMineralAcres = 0;
+    landHolding.mineralOwnerRoyalty = 0; 
+    landHolding.section = '';
+    landHolding.township = '';
+    landHolding.range = '';
+    landHolding.titleSource = '';
 
     if (fileInput.value) {
       fileInput.value.value = '';

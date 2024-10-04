@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import {
   fetchLandHoldings,
+  getOwnerById,
   createLandHolding,
   deleteLandHolding,
   updateLandHolding,
@@ -19,7 +20,8 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
     async loadLandHoldings() {
       this.isLoading = true;
       try {
-        this.landHoldings = await fetchLandHoldings();
+        const landHoldingWithOwners = await fetchLandHoldings();
+        this.landHoldings = landHoldingWithOwners;
       } catch (error) {
         this.error = "Failed to load land holdings.";
         console.error(error);
@@ -31,6 +33,7 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
     // create a new land holding
     async addLandHolding(newLandHolding, file) {
       this.isLoading = true;
+
       try {
         console.log(
           "Creating land holding with data from store",
@@ -40,6 +43,12 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
           newLandHolding,
           file
         );
+
+        if (createdLandHolding.owner) {
+          const ownerDetails = await getOwnerById(createdLandHolding.owner);
+          createdLandHolding.owner = ownerDetails; 
+        }
+
         console.log("Created land holding successfully", createdLandHolding);
         this.landHoldings.push(createdLandHolding);
       } catch (error) {

@@ -127,6 +127,7 @@ export const fetchLandHoldings = async () => {
 
     const landHoldings = await landHoldingsCollection.find();
 
+
     // fetch owners for each land holding
     const landHoldingsWithOwners = await Promise.all(
       landHoldings.map(async (landHolding) => {
@@ -146,6 +147,13 @@ export const fetchLandHoldings = async () => {
     throw error;
   }
 };
+
+// fetch owner by _id
+export const getOwnerById = async (ownerId) => {
+  const ownersCollection = getOwnersCollection();
+  const owner = await ownersCollection.findOne({ _id: new Realm.BSON.ObjectId(ownerId) });
+  return owner;
+}
 
 // update land holding
 export const updateLandHolding = async (
