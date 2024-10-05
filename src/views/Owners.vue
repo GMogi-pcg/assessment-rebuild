@@ -107,6 +107,7 @@
 import { ref, onMounted } from 'vue';
 import NewOwner from '../components/NewOwner.vue';
 import FileModal from '../components/FileModal.vue';
+import FileModalTest from '../components/FileModalTest.vue';
 import { useOwnerStore } from '../stores/ownerStore';
 
 // Dropdown options

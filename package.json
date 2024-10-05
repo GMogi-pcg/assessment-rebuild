@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.23",
     "pinia": "^2.2.2",
     "realm-web": "^2.0.1",
     "vue": "^3.4.37",
