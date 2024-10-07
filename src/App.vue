@@ -2,7 +2,7 @@
 import { onMounted } from 'vue';
 import { useAuthStore } from './stores/authStore';
 import HelloWorld from './components/HelloWorld.vue'
-import NavBar from './components/NavBar.vue';
+import NavBarTest from './components/NavBarTest.vue';
 
 const authStore = useAuthStore();
 
@@ -13,7 +13,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <NavBar />
+    <NavBarTest />
     <main>
       <div class="p-4">
         <router-view />
