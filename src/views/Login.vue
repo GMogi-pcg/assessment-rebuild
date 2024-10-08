@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-10">
-    <h1 class="text-3xl sm:text-4xl lg-text-5xl font-bold mb-8 text-center text-gray-800">Login</h1>
+    <h1 class="text-3xl lg:text-5xl font-bold mb-8 text-center text-gray-800">Welcome Back</h1>
+    <h2 class="text-3xl sm:text-4xl  mb-8 text-center text-gray-800">Login</h2>
 
     <!--Error Message-->
     <div v-if="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"

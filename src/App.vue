@@ -11,14 +11,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <NavBar />
     <main>
-      <div class="p-4">
+      <div class="h-screen">
         <router-view />
       </div>
     </main>
-  </div>
 </template>
 
 <style scoped>

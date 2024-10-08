@@ -56,9 +56,11 @@ const router = createRouter({
 // global navigation guard
 router.beforeEach((to, from, next) => {
   // check if route requires authentication
+
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     // check if user is authenticated
     if (!isAuthenticated()) {
+      console.log("User not authenticated");
       // redirect to login page
       next({ name: "Login" });
     } else {

@@ -1,105 +1,108 @@
 <template>
-  <div class="p-4">
-    <NewOwner  />
-    <div class="text-center my-4">
-      <h2 class="text-xl font-bold mb-4">Owners</h2>
-    </div>
+  <div>
+    <NavBar />
+    <div class="p-4">
+      <NewOwner />
+      <div class="text-center my-4">
+        <h2 class="text-xl font-bold mb-4">Owners</h2>
+      </div>
 
-    <!-- Loading State -->
-    <div v-if="isLoading" class="text-center my-4">
-      Loading Owners...
-    </div>
+      <!-- Loading State -->
+      <div v-if="isLoading" class="text-center my-4">
+        Loading Owners...
+      </div>
 
-    <!--Error State-->
-    <div v-if="error" class="text-center my-4 text-red-500">{{ error }}</div>
+      <!--Error State-->
+      <div v-if="error" class="text-center my-4 text-red-500">{{ error }}</div>
 
-    <!--Debugging: Show owners data for validation-->
-    <!--<pre v-if="!isLoading && ownerStore.owners.length === 0">No owners found. Check the data: {{ ownerStore.owners }}</pre>-->
+      <!--Debugging: Show owners data for validation-->
+      <!--<pre v-if="!isLoading && ownerStore.owners.length === 0">No owners found. Check the data: {{ ownerStore.owners }}</pre>-->
 
-    <!-- Owners Table -->
-    <table class="min-w-full bg-white" v-if="!isLoading && ownerStore.owners.length > 0">
-      <thead>
-        <tr>
-          <th class="py-2 px-4 border-b">Name</th>
-          <th class="py-2 px-4 border-b">Entity Type</th>
-          <th class="py-2 px-4 border-b">Owner Type</th>
-          <th class="py-2 px-4 border-b">Address</th>
-          <th class="py-2 px-4 border-b">Total Land Holdings</th>
-          <th class="py-2 px-4 border-b">Files</th>
-          <th class="py-2 px-4 border-b">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="owner in ownerStore.owners" :key="owner._id">
-          <!-- Editing Mode -->
-          <template v-if="editingId === owner._id">
-            <td class="py-2 px-4 border-b">
-              <input type="text" v-model="editingData.name" class="shadow-md w-full" />
-            </td>
+      <!-- Owners Table -->
+      <table class="min-w-full bg-white" v-if="!isLoading && ownerStore.owners.length > 0">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b">Name</th>
+            <th class="py-2 px-4 border-b">Entity Type</th>
+            <th class="py-2 px-4 border-b">Owner Type</th>
+            <th class="py-2 px-4 border-b">Address</th>
+            <th class="py-2 px-4 border-b">Total Land Holdings</th>
+            <th class="py-2 px-4 border-b">Files</th>
+            <th class="py-2 px-4 border-b">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="owner in ownerStore.owners" :key="owner._id">
+            <!-- Editing Mode -->
+            <template v-if="editingId === owner._id">
+              <td class="py-2 px-4 border-b">
+                <input type="text" v-model="editingData.name" class="shadow-md w-full" />
+              </td>
 
-            <!--Entity Dropdown-->
-            <td class="py-2 px-4 border-b">
-              <select v-model="editingData.entityType" class="shadow-md w-full">
-                <option disabled value="">Select Entity Type</option>
-                <option v-for="type in entityTypes" :key="type" :value="type">{{ type }}</option>
-              </select>
-            </td>
-            <!-- OwnerType Dropdown-->
-            <td class="py-2 px-4 border-b">
-              <select v-model="editingData.ownerType" class="shadow-md w-full">
-                <option disabled value="">Select Owner Type</option>
-                <option v-for="type in ownerTypes" :key="type" :value="type">{{ type }}</option>
-              </select>
-            </td>
-            <!--Address Input-->
-            <td class="py-2 px-4 border-b">
-              <input type="text" v-model="editingData.address" class="shadow-md w-full" />
-            </td>
-            <!-- Total Land Holdings (non-editable during edit mode) -->
-            <td class="py-2 px-4 border-b text-center">
-              {{ owner.totalLandHoldings }}
-            </td>
-            <!-- Files Input (Editable) -->
-            <td class="py-2 px-4 border-b">
-              <input type="file" @change="handleFileChange" />
-              <div v-if="editingData.files">
-                <div v-for="(file, index) in editingData.files" :key="index">
-                  <a :href="`/uploads/${file}`" target="_blank">{{ file }}</a>
+              <!--Entity Dropdown-->
+              <td class="py-2 px-4 border-b">
+                <select v-model="editingData.entityType" class="shadow-md w-full">
+                  <option disabled value="">Select Entity Type</option>
+                  <option v-for="type in entityTypes" :key="type" :value="type">{{ type }}</option>
+                </select>
+              </td>
+              <!-- OwnerType Dropdown-->
+              <td class="py-2 px-4 border-b">
+                <select v-model="editingData.ownerType" class="shadow-md w-full">
+                  <option disabled value="">Select Owner Type</option>
+                  <option v-for="type in ownerTypes" :key="type" :value="type">{{ type }}</option>
+                </select>
+              </td>
+              <!--Address Input-->
+              <td class="py-2 px-4 border-b">
+                <input type="text" v-model="editingData.address" class="shadow-md w-full" />
+              </td>
+              <!-- Total Land Holdings (non-editable during edit mode) -->
+              <td class="py-2 px-4 border-b text-center">
+                {{ owner.totalLandHoldings }}
+              </td>
+              <!-- Files Input (Editable) -->
+              <td class="py-2 px-4 border-b">
+                <input type="file" @change="handleFileChange" />
+                <div v-if="editingData.files">
+                  <div v-for="(file, index) in editingData.files" :key="index">
+                    <a :href="`/uploads/${file}`" target="_blank">{{ file }}</a>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <!-- Save Button -->
-            <td class="py-2 px-4 border-b">
-              <button @click="handleSaveEdit(owner._id)"
-                class="bg-gray-700 hover:bg-gray-600 text-white px-4 rounded">Save</button>
-            </td>
-          </template>
+              </td>
+              <!-- Save Button -->
+              <td class="py-2 px-4 border-b">
+                <button @click="handleSaveEdit(owner._id)"
+                  class="bg-gray-700 hover:bg-gray-600 text-white px-4 rounded">Save</button>
+              </td>
+            </template>
 
-          <!-- Display Mode -->
-          <template v-else>
-            <td class="py-2 px-4 border-b text-center">{{ owner.name }}</td>
-            <td class="py-2 px-4 border-b text-center">{{ owner.entityType }}</td>
-            <td class="py-2 px-4 border-b text-center">{{ owner.ownerType }}</td>
-            <td class="py-2 px-4 border-b text-center">{{ owner.address }}</td>
-            <td class="py-2 px-4 border-b text-center">{{ owner.totalLandHoldings }}</td>
-            <td class="py-2 px-4 border-b text-center">
-              <button @click="openFileModal(owner)" class="text-blue-500 hover:underline">
-                View Files
-              </button>
-            </td>
-            <td class="py-2 px-4 border-b text-center">
-              <button @click="handleEditOwner(owner)"
-                class="bg-gray-700 hover:bg-gray-600 text-white px-4 h-8 rounded">Edit</button>
-              <button @click="handleDeleteOwner(owner._id)"
-                class="bg-red-700 hover:bg-red-600 text-white px-4 h-8 my-1 rounded">Delete</button>
-            </td>
-          </template>
+            <!-- Display Mode -->
+            <template v-else>
+              <td class="py-2 px-4 border-b text-center">{{ owner.name }}</td>
+              <td class="py-2 px-4 border-b text-center">{{ owner.entityType }}</td>
+              <td class="py-2 px-4 border-b text-center">{{ owner.ownerType }}</td>
+              <td class="py-2 px-4 border-b text-center">{{ owner.address }}</td>
+              <td class="py-2 px-4 border-b text-center">{{ owner.totalLandHoldings }}</td>
+              <td class="py-2 px-4 border-b text-center">
+                <button @click="openFileModal(owner)" class="text-blue-500 hover:underline">
+                  View Files
+                </button>
+              </td>
+              <td class="py-2 px-4 border-b text-center">
+                <button @click="handleEditOwner(owner)"
+                  class="bg-gray-700 hover:bg-gray-600 text-white px-4 h-8 rounded">Edit</button>
+                <button @click="handleDeleteOwner(owner._id)"
+                  class="bg-red-700 hover:bg-red-600 text-white px-4 h-8 my-1 rounded">Delete</button>
+              </td>
+            </template>
 
-        </tr>
-      </tbody>
-    </table>
-    <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedOwnerName"
-      @close="closeModal" />
+          </tr>
+        </tbody>
+      </table>
+      <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedOwnerName"
+        @close="closeModal" />
+    </div>
   </div>
 </template>
 
@@ -108,6 +111,7 @@ import { ref, onMounted } from 'vue';
 import NewOwner from '../components/NewOwner.vue';
 import FileModal from '../components/FileModal.vue';
 import { useOwnerStore } from '../stores/ownerStore';
+import NavBar from '../components/NavBar.vue';
 
 // Dropdown options
 const entityTypes = ['Individual', 'Company', 'Investor', 'Trust'];

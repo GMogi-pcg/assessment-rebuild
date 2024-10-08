@@ -162,6 +162,10 @@ function handleFileChange(event) {
 // handl save with additonal checks
 
 const handleSave = async () => {
+  if (!landHolding.legalEntity || !landHolding.owner || !landHolding.netMineralAcres || !landHolding.mineralOwnerRoyalty || !landHolding.section || !landHolding.township || !landHolding.range || !landHolding.titleSource) {
+    alert('Please fill out all fields');
+    return;
+  }
 
   if (!isSectionValid.value) {
     alert('Section must be 3 digits');
