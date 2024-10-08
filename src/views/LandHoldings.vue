@@ -161,25 +161,7 @@ const closeModal = () => {
   isModalVisible.value = false;
 };
 
-// const handleCreateLandHolding = async (newLandHolding) => {
 
-//   try {
-//     if (selectedFiles.value.length > 0) {
-//       await landHoldingStore.addLandHolding(newLandHolding, selectedFiles.value);
-//     } else {
-//       await landHoldingStore.addLandHolding(newLandHolding);
-//     }
-//     // this is where name and sectionName are dynamically constructed
-//     newLandHolding.sectionName = `${newLandHolding.section}-${newLandHolding.township}-${newLandHolding.range}`;
-//     newLandHolding.name = `${newLandHolding.sectionName} ${newLandHolding.legalEntity}`;
-
-//     await landHoldingStore.addLandHolding(newLandHolding);
-//   } catch (error) {
-//     console.error('Error creating land holding', error);
-//     error.value = 'Failed to create land holding';
-//   }
-
-// };
 const handleDeleteLandHolding = async (id) => {
   try {
     await landHoldingStore.removeLandHolding(id);

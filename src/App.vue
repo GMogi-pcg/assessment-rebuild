@@ -1,7 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useAuthStore } from './stores/authStore';
-import HelloWorld from './components/HelloWorld.vue'
 import NavBar from './components/NavBar.vue';
 
 const authStore = useAuthStore();
