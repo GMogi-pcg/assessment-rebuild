@@ -5,6 +5,7 @@ import {
   deleteOwner,
   updateOwner,
   uploadFiles,
+  deleteFile
 } from "../services/ownerService";
 
 export const useOwnerStore = defineStore("ownerStore", {
@@ -75,6 +76,27 @@ export const useOwnerStore = defineStore("ownerStore", {
         console.error(error);
       }
     },
+    
+    // Delete file
+    async removeFile(ownerId, fileUrl) {
+      try {
+        const actualOwnerId = ownerId.toHexString() ? ownerId.toHexString() : ownerId;
+        await deleteFile(ownerId, fileUrl);
+
+        // update owner from store
+        const owner = this.owners.find((owner) => owner._id === ownerId);
+        if (owner) {
+          owner.fileUrls = owner.fileUrls.filter((url) => url !== fileUrl);
+
+          await updateOwner(ownerId, owner);
+        }
+      } catch (error) {
+        this.error = "Failed to delete file.";
+        console.error(error);
+      }
+    },
+
+
     selectOwner(owner) {
       this.selectedOwner = owner;
     },

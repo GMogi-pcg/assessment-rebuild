@@ -171,3 +171,40 @@ export const deleteOwner = async (ownerId) => {
     throw new Error("Failed to delete owner");
   }
 };
+
+// Delete file
+export const deleteFile = async (ownerId, fileUrl) => {
+  try {
+
+    console.log("Deleting file", fileUrl, "from owner", ownerId);
+    if (!Realm.BSON.ObjectID.isValid(ownerId)) {
+      throw new Error("Invalid owner ID format");
+    }
+    const ownersCollection = getOwnersCollection();
+    const objectIdOwnerId = new Realm.BSON.ObjectId(ownerId);
+  
+    const owner = await ownersCollection.findOne({ _id: objectIdOwnerId });
+  
+    if (!owner) {
+      throw new Error("Owner not found");
+    }
+  
+    const updatedFiles = owner.fileUrls.filter((url) => url !== fileUrl); // Remove the file URL
+  
+    await ownersCollection.updateOne(
+      { _id: objectIdOwnerId },
+      { $set: { fileUrls: updatedFiles } }
+    );
+  
+    // try {
+    //   await fetch(fileUrl, { method: "DELETE" });
+    // } catch (error) {
+    //   console.error("Error deleting file from external storage, error");
+    // }
+    // console.log("File deleted successfully from owner", ownerId);
+  } catch (error) {
+    console.error("Error deleting file", error);
+    throw new Error("Failed to delete file");
+  }
+
+}

@@ -100,8 +100,8 @@
           </tr>
         </tbody>
       </table>
-      <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedOwnerName"
-        @close="closeModal" />
+      <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedOwnerName" 
+        @close="closeModal" @delete="handleFileDelete(selectedOwnerId)"/>
     </div>
   </div>
 </template>
@@ -129,6 +129,7 @@ const selectedFiles = ref([]);
 const isModalVisible = ref(false);
 const selectedFileUrls = ref([]);
 const selectedOwnerName = ref('');
+const selectedOwnerId = ref(null);
 
 // Load owners when the component is mounted
 onMounted(async () => {
@@ -146,6 +147,7 @@ const openFileModal = (owner) => {
   console.log('Files URLS:', owner.fileUrls)
   selectedFileUrls.value = owner.fileUrls || [];
   selectedOwnerName.value = owner.name;
+  selectedOwnerId.value = owner._id;
   isModalVisible.value = true;
 };
 
@@ -180,6 +182,14 @@ const handleSaveEdit = async (id) => {
 
 const handleFileChange = (event) => {
   selectedFiles.value = [...event.target.files];
-}
+};
+
+const handleFileDelete = async (fileUrl, ownerId) => {
+  if (!fileUrl || !ownerId) {
+    console.error('Invalid fileUrl or ownerId');
+    return;
+  }
+  await ownerStore.removeFile(ownerId, fileUrl);
+};
 
 </script>
