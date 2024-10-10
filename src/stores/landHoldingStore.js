@@ -73,6 +73,14 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
           id,
           updatedLandHolding
         );
+
+        // added this to see if I can fix bug
+        if (savedLandHolding.owner) {
+          const ownerDetails = await getOwnerById(savedLandHolding.owner);
+          savedLandHolding.owner = ownerDetails;
+        }
+
+
         this.landHoldings = this.landHoldings.map((landHolding) =>
           landHolding._id === id ? savedLandHolding : landHolding
         );
