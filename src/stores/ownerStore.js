@@ -17,6 +17,9 @@ export const useOwnerStore = defineStore("ownerStore", {
     selectedFileUrls: [],
     selectedOwnerName: "",
     selectedOwnerId: null,
+    editingId: null,
+    editingData: {},
+    selectedFiles: [],
   }),
   actions: {
     // fetch all owners from api
@@ -24,7 +27,6 @@ export const useOwnerStore = defineStore("ownerStore", {
       this.isLoading = true;
       try {
         this.owners = await fetchOwners();
-        console.log("Checking store", this.owners)
       } catch (error) {
         this.error = "Failed to load owners.";
         console.error(error);
@@ -51,7 +53,7 @@ export const useOwnerStore = defineStore("ownerStore", {
       }
     },
     //  Update owner
-    async saveOwner(id, updatedOwner, files = []) {
+    async saveOwner(id, updatedOwner = this.editingData, files = this.selectedFiles) {
       try {
         if (files.length > 0) {
           const uploadedFileUrls = await uploadFiles(files);
@@ -64,6 +66,7 @@ export const useOwnerStore = defineStore("ownerStore", {
         this.owners = this.owners.map((owner) =>
           owner._id === id ? savedOwner : owner
         );
+        this.clearEditing();
         console.log("I am in the store",this.owners)
       } catch (error) {
         this.error = "Failed to update owner.";
@@ -95,6 +98,22 @@ export const useOwnerStore = defineStore("ownerStore", {
       // this.selectedOwnerName = "";
       // this.selectedOwnerId = null;
     },
+
+    selectOwner(owner) {
+      this.selectedOwner = owner;
+      this.editingId = owner._id;
+      this.editingData = { ...owner };
+    },
+
+    clearEditing() {
+      this.editingId = null;
+      this.editingData = {};
+      this.selectedFiles = []
+    },
+    
+    handleFileChange(event) {
+      this.selectedFiles = [...event.target.files];
+    },
     // Delete file
     // async removeFile(ownerId, fileUrl) {
     //   try {
@@ -112,8 +131,6 @@ export const useOwnerStore = defineStore("ownerStore", {
     // },
 
 
-    selectOwner(owner) {
-      this.selectedOwner = owner;
-    },
+
   },
 });

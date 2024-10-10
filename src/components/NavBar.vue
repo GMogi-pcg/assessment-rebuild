@@ -55,7 +55,6 @@ watch(
 
 const handleLogout = async () => {
   await authStore.logout()
-  console.log('User logged out');
   router.push({ name: 'Login' }); // Redirect to login
 };
 
