@@ -43,8 +43,6 @@ const handleSignup = async () => {
     const user = await loginUser(email.value, password.value);
 
     if (user) {
-
-      alert("Sign up successful. Please log in.");
       router.push('/home');
     }
 
