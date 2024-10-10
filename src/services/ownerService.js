@@ -109,6 +109,18 @@ export const fetchOwners = async () => {
 
 // UPDATE OWNER
 export const updateOwner = async (ownerId, ownerData, files = null) => {
+  const ownersCollection = getOwnersCollection();
+
+  // logic for checking if owner with same name and address exists
+  const existingOwner = await ownersCollection.findOne({
+    name: ownerData.name,
+    address: ownerData.address,
+  });
+
+  if (existingOwner) {
+    throw new Error("An owner with same name and address already exists");
+  }
+
   const owner = new Owner(ownerData);
 
   // validation
@@ -202,7 +214,7 @@ export const deleteOwner = async (ownerId) => {
 //       { $set: { fileUrls: updatedFileUrls } }
 //     )
 
-//     console.log("MongoDB update result:", updateResult);  
+//     console.log("MongoDB update result:", updateResult);
 
 //     console.log(`File ${fileUrl} deleted from owner ${ownerId}`);
 //     return true
@@ -211,7 +223,3 @@ export const deleteOwner = async (ownerId) => {
 //     throw new Error("Failed to delete file");
 //   }
 // }
-
-
-
-

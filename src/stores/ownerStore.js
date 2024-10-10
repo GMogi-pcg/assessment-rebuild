@@ -53,7 +53,11 @@ export const useOwnerStore = defineStore("ownerStore", {
       }
     },
     //  Update owner
-    async saveOwner(id, updatedOwner = this.editingData, files = this.selectedFiles) {
+    async saveOwner(
+      id,
+      updatedOwner = this.editingData,
+      files = this.selectedFiles
+    ) {
       try {
         if (files.length > 0) {
           const uploadedFileUrls = await uploadFiles(files);
@@ -67,10 +71,18 @@ export const useOwnerStore = defineStore("ownerStore", {
           owner._id === id ? savedOwner : owner
         );
         this.clearEditing();
-        console.log("I am in the store",this.owners)
+        console.log("I am in the store", this.owners);
       } catch (error) {
-        this.error = "Failed to update owner.";
-        console.error(error);
+        if (
+          error.message.includes(
+            "An owner with same name and address already exists"
+          )
+        ) {
+          alert("An owner with same name and address already exists");
+        } else {
+          this.error = "Failed to update owner.";
+          console.error(error);
+        }
       }
     },
 
@@ -108,9 +120,9 @@ export const useOwnerStore = defineStore("ownerStore", {
     clearEditing() {
       this.editingId = null;
       this.editingData = {};
-      this.selectedFiles = []
+      this.selectedFiles = [];
     },
-    
+
     handleFileChange(event) {
       this.selectedFiles = [...event.target.files];
     },
@@ -129,8 +141,5 @@ export const useOwnerStore = defineStore("ownerStore", {
     //     console.error(error);
     //   }
     // },
-
-
-
   },
 });
