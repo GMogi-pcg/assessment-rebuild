@@ -133,7 +133,6 @@ const titleSourceOptions = ['Class A', 'Class B', 'Class C', 'Class D'];
 const landHoldingStore = useLandHoldingStore();
 const editingId = ref(null);
 const editingData = ref({});
-const file = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
 const selectedFiles = ref([]);
@@ -194,27 +193,6 @@ const handleSaveEdit = async (id) => {
   editingId.value = null;
   editingData.value = {};
   selectedFiles.value = [];
-
-
-  // try {
-  //   if  (editingData.value.owner && editingData.value.owner instanceof Object && editingData.value.owner._id) {
-  //     editingData.value.owner = new Realm.BSON.ObjectId(editingData.value.owner);
-
-  //   } else if (typeof editingData.value.owner === 'string') {
-  //     editingData.value.owner = new Realm.BSON.ObjectId(editingData.value.owner); 
-  //   }
-  //   editingData.value.sectionName = `${editingData.value.township}-${editingData.value.range}-${editingData.value.section}`;
-  //   editingData.value.name = `${editingData.value.sectionName} ${editingData.value.legalEntity}`;
-  //   await landHoldingStore.saveLandHolding(id, editingData.value);
-  //   editingId.value = null;
-  //   editingData.value = {};
-  //   file.value = null;
-  // } catch (error) {
-  //   console.error("Failed to save the land holding:", error);
-
-  // }
-
-
 
 
 };

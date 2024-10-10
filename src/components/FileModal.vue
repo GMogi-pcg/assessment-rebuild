@@ -49,6 +49,7 @@ const closeModal = () => {
   emit('close');
 }
 
+// No implementation for this function yet
 const deletedFile = (url) => {
   emit('delete', url, props.ownerId);
 }
