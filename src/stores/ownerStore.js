@@ -13,6 +13,10 @@ export const useOwnerStore = defineStore("ownerStore", {
     selectedOwner: null,
     isLoading: false,
     error: null,
+    isModalVisible: false,
+    selectedFileUrls: [],
+    selectedOwnerName: "",
+    selectedOwnerId: null,
   }),
   actions: {
     // fetch all owners from api
@@ -76,6 +80,20 @@ export const useOwnerStore = defineStore("ownerStore", {
         this.error = "Failed to delete owner.";
         console.error(error);
       }
+    },
+
+    openFileModal(owner) {
+      this.selectedFileUrls = owner.fileUrls || [];
+      this.selectedOwnerName = owner.name;
+      this.selectedOwnerId = owner._id;
+      this.isModalVisible = true;
+    },
+
+    closeFileModal() {
+      this.isModalVisible = false;
+      // this.selectedFileUrls = [];
+      // this.selectedOwnerName = "";
+      // this.selectedOwnerId = null;
     },
     // Delete file
     // async removeFile(ownerId, fileUrl) {

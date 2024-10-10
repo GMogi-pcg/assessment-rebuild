@@ -85,7 +85,7 @@
               <td class="py-2 px-4 border-b text-center">{{ owner.address }}</td>
               <td class="py-2 px-4 border-b text-center">{{ owner.totalLandHoldings }}</td>
               <td class="py-2 px-4 border-b text-center">
-                <button @click="openFileModal(owner)" class="text-blue-500 hover:underline">
+                <button @click="ownerStore.openFileModal(owner)" class="text-blue-500 hover:underline">
                   View Files
                 </button>
               </td>
@@ -100,8 +100,8 @@
           </tr>
         </tbody>
       </table>
-      <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedOwnerName" :ownerId="selectedOwnerId"
-        @close="closeModal" />
+      <FileModal :isVisible="ownerStore.isModalVisible" :fileUrls="ownerStore.selectedFileUrls" :ownerName="ownerStore.selectedOwnerName" :ownerId="ownerStore.selectedOwnerId"
+        @close="ownerStore.closeFileModal" />
     </div>
   </div>
 </template>
@@ -120,16 +120,15 @@ const ownerTypes = ['Competitor', 'Seller', 'Investor', 'Professional'];
 const ownerStore = useOwnerStore();
 const editingId = ref(null);
 const editingData = ref({});
-const file = ref(null);
 const isLoading = ref(true);
 const error = ref(null);
 const selectedFiles = ref([]);
 
 // Modal state
-const isModalVisible = ref(false);
-const selectedFileUrls = ref([]);
-const selectedOwnerName = ref('');
-const selectedOwnerId = ref(null);
+// const isModalVisible = ref(false);
+// const selectedFileUrls = ref([]);
+// const selectedOwnerName = ref('');
+// const selectedOwnerId = ref(null);
 
 // Load owners when the component is mounted
 onMounted(async () => {
@@ -143,20 +142,20 @@ onMounted(async () => {
   }
 });
 
-const openFileModal = (owner) => {
-  console.log('Files URLS:', owner.fileUrls)
-  selectedFileUrls.value = owner.fileUrls || [];
-  selectedOwnerName.value = owner.name;
-  selectedOwnerId.value = owner._id;
-  isModalVisible.value = true;
-  console.log('Selected Owner:', selectedOwnerName.value);
-  console.log('Selected Owner ID:', selectedOwnerId.value);
-  console.log('Selected File URLs:', selectedFileUrls.value);
-};
+// const openFileModal = (owner) => {
+//   console.log('Files URLS:', owner.fileUrls)
+//   selectedFileUrls.value = owner.fileUrls || [];
+//   selectedOwnerName.value = owner.name;
+//   selectedOwnerId.value = owner._id;
+//   isModalVisible.value = true;
+//   console.log('Selected Owner:', selectedOwnerName.value);
+//   console.log('Selected Owner ID:', selectedOwnerId.value);
+//   console.log('Selected File URLs:', selectedFileUrls.value);
+// };
 
-const closeModal = () => {
-  isModalVisible.value = false;
-};
+// const closeModal = () => {
+//   isModalVisible.value = false;
+// };
 
 
 const handleDeleteOwner = async (id) => {
