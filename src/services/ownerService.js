@@ -107,7 +107,7 @@ export const fetchOwners = async () => {
   }
 };
 
-// Update owner
+// UPDATE OWNER
 export const updateOwner = async (ownerId, ownerData, files = null) => {
   const owner = new Owner(ownerData);
 
@@ -151,7 +151,7 @@ export const updateOwner = async (ownerId, ownerData, files = null) => {
 export const deleteOwner = async (ownerId) => {
   try {
     const mongoClient = getMongoClient();
-    const ownersCollection = mongoClient.db("PCGDB").collection("owners");
+    const ownersCollection = getOwnersCollection();
     const landholdingsCollection = mongoClient
       .db("PCGDB")
       .collection("landholdings");
@@ -172,39 +172,46 @@ export const deleteOwner = async (ownerId) => {
   }
 };
 
-// Delete file
-export const deleteFile = async (ownerId, fileUrl) => {
-  try {
+// export const deleteFile = async (ownerId, fileUrl) => {
+//   try {
+//     const ownersCollection = getOwnersCollection();
+//      // Check if owner exists
+//     console.log(`Looking for owner with ID ${ownerId}`);
+//     const owner = await ownersCollection.findOne({
+//       _id: new Realm.BSON.ObjectId(ownerId),
+//     });
 
-    console.log("Deleting file", fileUrl, "from owner", ownerId);
-    if (!Realm.BSON.ObjectID.isValid(ownerId)) {
-      throw new Error("Invalid owner ID format");
-    }
-    const ownersCollection = getOwnersCollection();
-    const objectIdOwnerId = new Realm.BSON.ObjectId(ownerId);
-  
-    const owner = await ownersCollection.findOne({ _id: objectIdOwnerId });
-  
-    if (!owner) {
-      throw new Error("Owner not found");
-    }
-  
-    const updatedFiles = owner.fileUrls.filter((url) => url !== fileUrl); // Remove the file URL
-  
-    await ownersCollection.updateOne(
-      { _id: objectIdOwnerId },
-      { $set: { fileUrls: updatedFiles } }
-    );
-  
-    // try {
-    //   await fetch(fileUrl, { method: "DELETE" });
-    // } catch (error) {
-    //   console.error("Error deleting file from external storage, error");
-    // }
-    // console.log("File deleted successfully from owner", ownerId);
-  } catch (error) {
-    console.error("Error deleting file", error);
-    throw new Error("Failed to delete file");
-  }
+//     if (!owner) {
+//       console.error(`Owner with ID ${ownerId} not found`);
+//       throw new Error(`Owner with ID ${ownerId} not found`);
+//     }
 
-}
+//     console.log("Owner found:", owner); // Debug
+
+//     const updatedFileUrls = owner.fileUrls.filter((fileUrlArray) => {
+//       return fileUrlArray[0] !== fileUrl
+//     });
+
+//     if (updatedFileUrls.length === owner.fileUrls.length) {
+//       console.log("No changes to file URLs, the file was not found in the array.");
+//       return
+//     }
+
+//     const updateResult = await ownersCollection.updateOne(
+//       { _id: new Realm.BSON.ObjectId(ownerId) },
+//       { $set: { fileUrls: updatedFileUrls } }
+//     )
+
+//     console.log("MongoDB update result:", updateResult);  
+
+//     console.log(`File ${fileUrl} deleted from owner ${ownerId}`);
+//     return true
+//   } catch (error) {
+//     console.error("Error deleting file", error);
+//     throw new Error("Failed to delete file");
+//   }
+// }
+
+
+
+

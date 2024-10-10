@@ -10,7 +10,7 @@
           <ul>
             <li v-for="(fileUrlArray, index) in fileUrls" :key="index" class="mb-2">
               <a :href="fileUrlArray" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">{{ getFileName(fileUrlArray[0]) }}</a>
-              <button @click="deletedFile(fileUrlArray[index])" class="ml-4 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">x</button>
+              <button @click="deletedFile(fileUrlArray[0])" class="ml-4  text-black px-2 py-1 rounded hover:bg-gray-200">x</button>
             </li>
           </ul>
         </div>
@@ -32,6 +32,7 @@ const props = defineProps({
   isVisible: Boolean,
   ownerName: String,
   fileUrls: Array,
+  ownerId: Object,
 });
 
 const emit = defineEmits(['close','delete']);

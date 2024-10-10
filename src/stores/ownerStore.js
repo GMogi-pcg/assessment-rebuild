@@ -5,7 +5,6 @@ import {
   deleteOwner,
   updateOwner,
   uploadFiles,
-  deleteFile
 } from "../services/ownerService";
 
 export const useOwnerStore = defineStore("ownerStore", {
@@ -21,6 +20,7 @@ export const useOwnerStore = defineStore("ownerStore", {
       this.isLoading = true;
       try {
         this.owners = await fetchOwners();
+        console.log("Checking store", this.owners)
       } catch (error) {
         this.error = "Failed to load owners.";
         console.error(error);
@@ -60,6 +60,7 @@ export const useOwnerStore = defineStore("ownerStore", {
         this.owners = this.owners.map((owner) =>
           owner._id === id ? savedOwner : owner
         );
+        console.log("I am in the store",this.owners)
       } catch (error) {
         this.error = "Failed to update owner.";
         console.error(error);
@@ -76,25 +77,21 @@ export const useOwnerStore = defineStore("ownerStore", {
         console.error(error);
       }
     },
-    
     // Delete file
-    async removeFile(ownerId, fileUrl) {
-      try {
-        const actualOwnerId = ownerId.toHexString() ? ownerId.toHexString() : ownerId;
-        await deleteFile(ownerId, fileUrl);
+    // async removeFile(ownerId, fileUrl) {
+    //   try {
+    //     await deleteFile(ownerId, fileUrl);
+    //     const owner = this.owners.find((owner) => owner._id === ownerId);
 
-        // update owner from store
-        const owner = this.owners.find((owner) => owner._id === ownerId);
-        if (owner) {
-          owner.fileUrls = owner.fileUrls.filter((url) => url !== fileUrl);
+    //     if (owner) {
+    //       owner.fileUrls = owner.fileUrls.filter((url) => url !== fileUrl);
 
-          await updateOwner(ownerId, owner);
-        }
-      } catch (error) {
-        this.error = "Failed to delete file.";
-        console.error(error);
-      }
-    },
+    //     }
+    //   } catch (error) {
+    //     this.error = "Failed to delete file.";
+    //     console.error(error);
+    //   }
+    // },
 
 
     selectOwner(owner) {

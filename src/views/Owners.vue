@@ -100,8 +100,8 @@
           </tr>
         </tbody>
       </table>
-      <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedOwnerName" 
-        @close="closeModal" @delete="handleFileDelete(selectedOwnerId)"/>
+      <FileModal :isVisible="isModalVisible" :fileUrls="selectedFileUrls" :ownerName="selectedOwnerName" :ownerId="selectedOwnerId"
+        @close="closeModal" />
     </div>
   </div>
 </template>
@@ -149,6 +149,9 @@ const openFileModal = (owner) => {
   selectedOwnerName.value = owner.name;
   selectedOwnerId.value = owner._id;
   isModalVisible.value = true;
+  console.log('Selected Owner:', selectedOwnerName.value);
+  console.log('Selected Owner ID:', selectedOwnerId.value);
+  console.log('Selected File URLs:', selectedFileUrls.value);
 };
 
 const closeModal = () => {
@@ -184,12 +187,20 @@ const handleFileChange = (event) => {
   selectedFiles.value = [...event.target.files];
 };
 
-const handleFileDelete = async (fileUrl, ownerId) => {
-  if (!fileUrl || !ownerId) {
-    console.error('Invalid fileUrl or ownerId');
-    return;
-  }
-  await ownerStore.removeFile(ownerId, fileUrl);
-};
+// Delete file
+// const handleFileDelete = async (fileUrl, ownerId) => {
+//   if (!fileUrl || !ownerId) {
+//     console.error('Invalid fileUrl or ownerId');
+//     return;
+//   }
+
+//   try {
+//     await ownerStore.removeFile(ownerId, fileUrl);
+//     selectedFileUrls.value = selectedFileUrls.value.filter((fileArr) => fileArr[0] !== fileUrl);
+//   } catch (error) {
+//     console.error('Error deleting file', error);
+//   }
+// };  
+
 
 </script>
