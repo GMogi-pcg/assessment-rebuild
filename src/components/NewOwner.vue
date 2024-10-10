@@ -72,6 +72,11 @@ const handleFileChange = (event) => {
 
 
 const handleSave = async () => {
+  if (!owner.name || !owner.entityType || !owner.ownerType || !owner.address) {
+    alert('Please fill out all fields');
+    return;
+  }
+  
   try {
     await ownerStore.addOwner({ ...owner }, selectedFiles.value || []);
 
