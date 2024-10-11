@@ -115,11 +115,11 @@ export const updateOwner = async (ownerId, ownerData, files = null) => {
   const existingOwner = await ownersCollection.findOne({
     name: ownerData.name,
     address: ownerData.address,
+    _id: { $ne: ownerData._id },
   });
-
-  // if (existingOwner) {
-  //   throw new Error("An owner with same name and address already exists");
-  // }
+  if (existingOwner) {
+    throw new Error("An owner with same name and address already exists");
+  }
 
   const owner = new Owner(ownerData);
   console.log(owner)

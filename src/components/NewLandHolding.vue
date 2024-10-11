@@ -131,7 +131,7 @@ function handleSectionChange(event) {
   isSectionValid.value = landHolding.section.length === 3;
 };
 
-function handleTownshipChange(event) {
+const handleTownshipChange = (event) => {
   const value = event.target.value.toUpperCase();
   if (/^\d{0,3}[NS]?$/.test(value)) {
     landHolding.township = value;
@@ -143,7 +143,7 @@ function handleTownshipChange(event) {
   isTownshipValid.value = landHolding.township.length === 4;
 };
 
-function handleRangeChange(event) {
+const handleRangeChange = (event) => {
   const value = event.target.value.toUpperCase();
   if (/^\d{0,3}[EW]?$/.test(value)) {
     landHolding.range = value;
@@ -155,7 +155,7 @@ function handleRangeChange(event) {
   isRangeValid.value = landHolding.range.length === 4;
 };
 
-function handleFileChange(event) {
+const handleFileChange = (event) => {
   selectedFiles.value = Array.from(event.target.files);
 };
 

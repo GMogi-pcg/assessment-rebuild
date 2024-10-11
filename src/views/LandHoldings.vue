@@ -38,7 +38,8 @@
             <!-- Editing Mode -->
             <template v-if="landHoldingStore.editingId === landHolding._id">
               <td class="py-2 px-4 border-b w-full text-center">
-                {{landHoldingStore.editingData.section }}-{{ landHoldingStore.editingData.township }}-{{ landHoldingStore.editingData.range }}-{{ landHoldingStore.editingData.legalEntity }}
+                {{ landHoldingStore.editingData.section }}-{{ landHoldingStore.editingData.township }}-{{
+                  landHoldingStore.editingData.range }}-{{ landHoldingStore.editingData.legalEntity }}
               </td>
               <td class="py-2 px-4 border-b text-center">
                 {{ landHolding.owner ? landHolding.owner.name : 'No Owner' }}
@@ -47,19 +48,23 @@
                 <input type="text" v-model="landHoldingStore.editingData.legalEntity" class="shadow-md text-center " />
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="number" v-model="landHoldingStore.editingData.netMineralAcres" class="shadow-md text-center w-16" />
+                <input type="number" v-model="landHoldingStore.editingData.netMineralAcres"
+                  class="shadow-md text-center w-16" />
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="number" v-model="landHoldingStore.editingData.mineralOwnerRoyalty" class="shadow-md text-center w-16 " />
+                <input type="number" v-model="landHoldingStore.editingData.mineralOwnerRoyalty"
+                  class="shadow-md text-center w-16 " />
               </td>
               <td class="py-2 px-4 border-b text-center w-4/5">
                 {{ landHolding.sectionName }}
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="text" v-model="landHoldingStore.editingData.section" class="shadow-md w-full" />
+                <input type="text" v-model="landHoldingStore.editingData.section" @input="handleSectionChange" class="shadow-md w-full" maxlength="3" />
+                <p v-if="!isSectionValid" class="text-red-500 text-xs italic">Section must be 3 digits</p>
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="text" v-model="landHoldingStore.editingData.township" class="shadow-md w-full" />
+                <input type="text" v-model="landHoldingStore.editingData.township" @input="handleTownshipChange" class="shadow-md w-full" maxlength="4" />
+                <p v-if="!isTownshipValid" class="text-red-500 text-xs italic">Section must be 3 digits and end with N or S</p>
               </td>
               <td class="py-2 px-4 border-b">
                 <input type="text" v-model="landHoldingStore.editingData.range" class="shadow-md w-full" />
@@ -82,12 +87,16 @@
               <td class="py-2 px-4 border-b">
                 <button @click="handleSaveEdit(landHolding._id)"
                   class="bg-gray-700 hover:bg-gray-600 text-white px-4 rounded">Save</button>
+                <button @click="cancelEdit"
+                  class="bg-gray-700 hover:bg-gray-600 text-white px-4 rounded">Cancel</button>
+
               </td>
             </template>
 
             <!-- Display Mode -->
             <template v-else>
-              <td class="py-2 px-4 border-b text-center">{{ `${landHolding.section}-${landHolding.township}-${landHolding.range}` }}</td>
+              <td class="py-2 px-4 border-b text-center">{{
+                `${landHolding.section}-${landHolding.township}-${landHolding.range}` }}</td>
               <td class="py-2 px-4 border-b text-center">{{ landHolding.owner ? landHolding.owner.name : 'No Owner' }}
               </td>
               <td class="py-2 px-4 border-b text-center">{{ landHolding.legalEntity }}</td>
@@ -121,7 +130,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import NewLandHolding from '../components/NewLandHolding.vue';
 import { useLandHoldingStore } from '../stores/landHoldingStore';
 import FileModal from '../components/FileModal.vue';
@@ -129,6 +138,10 @@ import NavBar from '../components/NavBar.vue';
 
 // Dropdown options for title source
 const titleSourceOptions = ['Class A', 'Class B', 'Class C', 'Class D'];
+
+const isSectionValid = ref(true);
+const isTownshipValid = ref(true);
+const isRangeValid = ref(true);
 
 const landHoldingStore = useLandHoldingStore();
 // const editingId = ref(null);
@@ -141,6 +154,17 @@ const landHoldingStore = useLandHoldingStore();
 const isModalVisible = ref(false);
 const selectedFileUrls = ref([]);
 const selectedLandholding = ref('');
+
+const landHolding = reactive({
+  legalEntity: '',
+  owner: '',
+  legalEntity: '',
+  netMineralAcres: 0,
+  mineralOwnerRoyalty: 0,
+  section: landHoldingStore.editingData.section,
+  township: landHoldingStore.editingData.township,
+  range: '',
+});
 
 // Load land holdings when the component is mounted
 onMounted(async () => {
@@ -199,6 +223,34 @@ const handleSaveEdit = async (id) => {
   landHoldingStore.clearEditing();
 
 };
+
+const handleSectionChange = (event) => {
+  const value = event.target.value;
+  if (/^\d{0,3}$/.test(value)) {
+    landHolding.section = value;
+  } else {
+    event.target.value = landHolding.section;
+  }
+
+  // check if section is 3 digits
+  isSectionValid.value = landHolding.section.length === 3;
+};
+
+const handleTownshipChange = (event) => {
+  const value = event.target.value.toUpperCase();
+  if (/^\d{0,3}[NS]?$/.test(value)) {
+    landHolding.township = value;
+  } else {
+    event.target.value = landHolding.township;
+  }
+
+  // check if section is 3 digits
+  isTownshipValid.value = /^\d{3}[NS]$/.test(landHolding.township);
+};
+
+const cancelEdit = async () => {
+  landHoldingStore.clearEditing();
+}
 
 
 // const handleFileChange = (event) => {
