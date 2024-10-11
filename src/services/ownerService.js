@@ -116,7 +116,7 @@ export const updateOwner = async (ownerId, ownerData, files = null) => {
     name: ownerData.name,
     address: ownerData.address,
   });
-  console.log("TEST",existingOwner.name)
+
   // if (existingOwner) {
   //   throw new Error("An owner with same name and address already exists");
   // }
