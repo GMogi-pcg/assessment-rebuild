@@ -8,15 +8,15 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="isLoading" class="text-center my-4">
+      <div v-if="landHoldingStore.isLoading" class="text-center my-4">
         Loading Land Holdings...
       </div>
 
       <!-- Error State -->
-      <div v-if="error" class="text-center my-4 text-red-500">{{ error }}</div>
+      <div v-if="landHoldingStore.error" class="text-center my-4 text-red-500">{{ landHoldingStore.error }}</div>
 
       <!-- Land Holdings Table -->
-      <table class="min-w-full bg-white" v-if="!isLoading && landHoldingStore.landHoldings.length > 0">
+      <table class="min-w-full bg-white" v-if="!landHoldingStore.isLoading && landHoldingStore.landHoldings.length > 0">
         <thead>
           <tr>
             <th class="py-2 px-4 border-b">Name</th>
@@ -36,45 +36,45 @@
         <tbody>
           <tr v-for="landHolding in landHoldingStore.landHoldings" :key="landHolding._id">
             <!-- Editing Mode -->
-            <template v-if="editingId === landHolding._id">
+            <template v-if="landHoldingStore.editingId === landHolding._id">
               <td class="py-2 px-4 border-b w-full text-center">
-                {{ landHolding.name }}
+                {{landHoldingStore.editingData.section }}-{{ landHoldingStore.editingData.township }}-{{ landHoldingStore.editingData.range }}-{{ landHoldingStore.editingData.legalEntity }}
               </td>
               <td class="py-2 px-4 border-b text-center">
                 {{ landHolding.owner ? landHolding.owner.name : 'No Owner' }}
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="text" v-model="editingData.legalEntity" class="shadow-md text-center " />
+                <input type="text" v-model="landHoldingStore.editingData.legalEntity" class="shadow-md text-center " />
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="number" v-model="editingData.netMineralAcres" class="shadow-md text-center w-16" />
+                <input type="number" v-model="landHoldingStore.editingData.netMineralAcres" class="shadow-md text-center w-16" />
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="number" v-model="editingData.mineralOwnerRoyalty" class="shadow-md text-center w-16 " />
+                <input type="number" v-model="landHoldingStore.editingData.mineralOwnerRoyalty" class="shadow-md text-center w-16 " />
               </td>
               <td class="py-2 px-4 border-b text-center w-4/5">
                 {{ landHolding.sectionName }}
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="text" v-model="editingData.section" class="shadow-md w-full" />
+                <input type="text" v-model="landHoldingStore.editingData.section" class="shadow-md w-full" />
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="text" v-model="editingData.township" class="shadow-md w-full" />
+                <input type="text" v-model="landHoldingStore.editingData.township" class="shadow-md w-full" />
               </td>
               <td class="py-2 px-4 border-b">
-                <input type="text" v-model="editingData.range" class="shadow-md w-full" />
+                <input type="text" v-model="landHoldingStore.editingData.range" class="shadow-md w-full" />
               </td>
               <td class="py-2 px-4 border-b">
-                <select v-model="editingData.titleSource" class="shadow-md w-13 text-center">
+                <select v-model="landHoldingStore.editingData.titleSource" class="shadow-md w-13 text-center">
                   <option disabled value="">Select Title Source</option>
                   <option v-for="source in titleSourceOptions" :key="source" :value="source">{{ source }}</option>
                 </select>
               </td>
               <!--Files Input (Editable)-->
               <td class="py-2 px-4 border-b w-4/5">
-                <input type="file" @change="handleFileChange" />
-                <div v-if="editingData.files">
-                  <div v-for="(file, index) in editingData.files" :key="index">
+                <input type="file" @change="landHoldingStore.handleFileChange" />
+                <div v-if="landHoldingStore.editingData.files">
+                  <div v-for="(file, index) in landHoldingStore.editingData.files" :key="index">
                     <a :href="`/uploads/${file}`" target="_blank">{{ file }}</a>
                   </div>
                 </div>
@@ -87,7 +87,7 @@
 
             <!-- Display Mode -->
             <template v-else>
-              <td class="py-2 px-4 border-b text-center">{{ landHolding.name }}</td>
+              <td class="py-2 px-4 border-b text-center">{{ `${landHolding.section}-${landHolding.township}-${landHolding.range}` }}</td>
               <td class="py-2 px-4 border-b text-center">{{ landHolding.owner ? landHolding.owner.name : 'No Owner' }}
               </td>
               <td class="py-2 px-4 border-b text-center">{{ landHolding.legalEntity }}</td>
@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import NewLandHolding from '../components/NewLandHolding.vue';
 import { useLandHoldingStore } from '../stores/landHoldingStore';
 import FileModal from '../components/FileModal.vue';
@@ -131,11 +131,11 @@ import NavBar from '../components/NavBar.vue';
 const titleSourceOptions = ['Class A', 'Class B', 'Class C', 'Class D'];
 
 const landHoldingStore = useLandHoldingStore();
-const editingId = ref(null);
-const editingData = ref({});
-const isLoading = ref(true);
-const error = ref(null);
-const selectedFiles = ref([]);
+// const editingId = ref(null);
+// const editingData = ref({});
+// const isLoading = ref(true);
+// const error = ref(null);
+// const selectedFiles = ref([]);
 
 // Modal state
 const isModalVisible = ref(false);
@@ -148,9 +148,7 @@ onMounted(async () => {
     await landHoldingStore.loadLandHoldings();
   } catch (err) {
     console.error('Error loading land holdings', err);
-    error.value = 'Failed to load land holdings';
-  } finally {
-    isLoading.value = false;
+    landHoldingStore.error.value = 'Failed to load land holdings';
   }
 });
 
@@ -177,27 +175,33 @@ const handleDeleteLandHolding = async (id) => {
 
 const handleEditLandHolding = async (landHolding) => {
   landHoldingStore.selectLandHolding(landHolding);
-  editingId.value = landHolding._id;
-  editingData.value = { ...landHolding };
+  // editingId.value = landHolding._id;
+  // editingData.value = { ...landHolding };
 };
 
 const handleSaveEdit = async (id) => {
-  const updatedLandHolding = { ...editingData.value };
+  // await landHoldingStore.saveLandHolding(id, landHoldingStore.editingData, landHoldingStore.selectedFiles);
+  // const updatedLandHolding = { ...editingData.value };
 
-  if (selectedFiles.value.length > 0) {
-    await landHoldingStore.saveLandHolding(id, editingData.value, selectedFiles.value);
-  } else {
-    await landHoldingStore.saveLandHolding(id, updatedLandHolding);
-  }
+  // if (selectedFiles.value.length > 0) {
+  //   await landHoldingStore.saveLandHolding(id, editingData.value, selectedFiles.value);
+  // } else {
+  //   await landHoldingStore.saveLandHolding(id, updatedLandHolding);
+  // }
 
-  editingId.value = null;
-  editingData.value = {};
-  selectedFiles.value = [];
+  // editingId.value = null;
+  // editingData.value = {};
+  // selectedFiles.value = [];
+  const { section, township, range, legalEntity } = landHoldingStore.editingData;
+  landHoldingStore.editingData.name = `${section}-${township}-${range}-${legalEntity}`;
 
+  await landHoldingStore.saveLandHolding(id, landHoldingStore.editingData, landHoldingStore.selectedFiles);
+  landHoldingStore.clearEditing();
 
 };
 
-const handleFileChange = (event) => {
-  selectedFiles.value = [...event.target.files];
-};
+
+// const handleFileChange = (event) => {
+//   selectedFiles.value = [...event.target.files];
+// };
 </script>

@@ -70,13 +70,14 @@ export class LandHoldings {
 
   // conver instance into MongoDB document
   toMongoDocument() {
+    const sectionName = `${this.section}-${this.township}-${this.range}`;
     return {
-      name: `${this.sectionName}-${this.legalEntity}`,
+      name: `${sectionName}-${this.legalEntity}`,
       owner: this.owner ? this.owner : null,
       legalEntity: this.legalEntity,
       netMineralAcres: this.netMineralAcres,
       mineralOwnerRoyalty: this.mineralOwnerRoyalty,
-      sectionName: `${this.section}-${this.township}-${this.range}`,
+      sectionName: sectionName,
       section: this.section,
       township: this.township,
       range: this.range,

@@ -12,6 +12,9 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
   state: () => ({
     landHoldings: [],
     selectedLandHolding: null,
+    editingId: null,
+    editingData: {},
+    selectedFiles: [],
     isLoading: false,
     error: null,
   }),
@@ -60,10 +63,10 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
     },
     // update land holding
     async saveLandHolding(id, updatedLandHolding, files = []) {
+
       try {
         if (files.length > 0) {
           const uploadedFileUrls = await uploadFiles(files);
-
           updatedLandHolding.fileUrls = uploadedFileUrls
             ? [...updatedLandHolding.fileUrls, ...uploadedFileUrls]
             : updatedLandHolding.fileUrls;
@@ -74,16 +77,20 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
           updatedLandHolding
         );
 
-        // added this to see if I can fix bug
+        // Re-fetch or reassign owner details if needed
         if (savedLandHolding.owner) {
           const ownerDetails = await getOwnerById(savedLandHolding.owner);
           savedLandHolding.owner = ownerDetails;
         }
 
 
+       //  update the stores landholings array
         this.landHoldings = this.landHoldings.map((landHolding) =>
           landHolding._id === id ? savedLandHolding : landHolding
         );
+
+        // clear the editing state
+        this.clearEditing();
       } catch (error) {
         this.error = "Failed to update land holding.";
         console.error(error);
@@ -105,6 +112,19 @@ export const useLandHoldingStore = defineStore("landHoldingStore", {
     // select land holding
     selectLandHolding(landHolding) {
       this.selectedLandHolding = landHolding;
+      this.editingId = landHolding._id;
+      this.editingData = { ...landHolding };
     },
+
+    clearEditing() {
+      this.selectedLandHolding = null;
+      this.editingId = null;
+      this.editingData = {}; 
+      this.selectedFiles = [];
+    },
+
+    handleFileChange(event) {
+      this.selectedFiles = [...event.target.files];
+    }
   },
 });

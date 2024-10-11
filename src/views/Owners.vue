@@ -74,6 +74,9 @@
               <td class="py-2 px-4 border-b">
                 <button @click="ownerStore.saveOwner(owner._id)"
                   class="bg-gray-700 hover:bg-gray-600 text-white px-4 rounded">Save</button>
+                <button @click="cancelEdit"
+                  class="bg-gray-700 hover:bg-gray-600 text-white px-4 rounded">Cancel</button>
+
               </td>
             </template>
 
@@ -138,6 +141,10 @@ const editOwner = async (owner) => {
   // ownerStore.editingId.value = owner._id;
   // ownerStore.editingData.value = { ...owner }
 };
+
+const cancelEdit = async () => {
+  ownerStore.clearEditing();
+}
 
 // Delete file
 // const handleFileDelete = async (fileUrl, ownerId) => {

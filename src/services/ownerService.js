@@ -116,13 +116,13 @@ export const updateOwner = async (ownerId, ownerData, files = null) => {
     name: ownerData.name,
     address: ownerData.address,
   });
-
-  if (existingOwner) {
-    throw new Error("An owner with same name and address already exists");
-  }
+  console.log("TEST",existingOwner.name)
+  // if (existingOwner) {
+  //   throw new Error("An owner with same name and address already exists");
+  // }
 
   const owner = new Owner(ownerData);
-
+  console.log(owner)
   // validation
   if (!owner.isValid()) {
     throw new Error("Invalid owner data, when updating owner");
